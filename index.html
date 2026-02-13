@@ -3,41 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EL GRIMORIO DE LAS MIL ALMAS v19.0</title>
+    <title>LIBRO MÁGICO DEL PODER v21.0</title>
     <style>
-        :root { --gold: #ffcc00; --bg: #0a0a0a; }
+        :root { --gold: #ffcc00; --bg: #0a0a0a; --sexrol: #ff4d4d; }
         body, html { height: 100%; margin: 0; background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         .app-wrapper { display: flex; flex-direction: column; height: 100vh; }
-        
-        /* HEADER AJUSTADO A 3 COLUMNAS */
-        .status-header { 
-            background: #111; border-bottom: 3px solid var(--gold); 
-            display: grid; grid-template-columns: repeat(3, 1fr); 
-            padding: 15px 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.7);
-        }
+        .status-header { background: #111; border-bottom: 3px solid var(--gold); display: grid; grid-template-columns: repeat(3, 1fr); padding: 15px 10px; }
         .status-box { border-left: 1px solid #333; padding: 0 15px; text-align: center; }
         .status-box:first-child { border-left: none; }
         .label { font-size: 11px; color: var(--gold); text-transform: uppercase; font-weight: bold; }
-        .value { font-size: 17px; font-weight: 800; color: #fff; margin-top: 3px; }
-
+        .value { font-size: 17px; font-weight: 800; color: #fff; }
         #chat { flex: 1; overflow-y: auto; padding: 30px 10%; background: radial-gradient(circle, #151515 0%, #050505 100%); }
         .msg-container { display: flex; gap: 15px; margin-bottom: 25px; animation: fadeIn 0.4s; }
         .avatar-circle { width: 55px; height: 55px; border-radius: 10px; background-size: cover; border: 2px solid var(--gold); flex-shrink: 0; }
-        .msg-content { max-width: 85%; }
-        .sender-name { font-weight: bold; font-size: 13px; color: var(--gold); margin-bottom: 5px; text-transform: uppercase; }
         .text { font-size: 16px; line-height: 1.6; background: rgba(255,255,255,0.04); padding: 12px 18px; border-radius: 12px; border: 1px solid rgba(255,204,0,0.1); }
-
         .input-footer { background: #0d0d0d; padding: 20px 10%; border-top: 1px solid #222; }
-        .input-bar { display: flex; gap: 12px; background: #1a1a1a; padding: 12px 20px; border-radius: 50px; border: 1px solid #333; }
-        input { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 16px; }
+        .input-bar { display: flex; gap: 12px; background: #1a1a1a; padding: 12px 20px; border-radius: 50px; }
+        input { flex: 1; background: transparent; border: none; color: #fff; outline: none; }
         button { background: var(--gold); color: #000; border: none; padding: 8px 25px; font-weight: bold; border-radius: 50px; cursor: pointer; }
-        
         .gen-img { width: 100%; max-width: 500px; border-radius: 12px; margin-top: 15px; border: 2px solid var(--gold); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
 <body>
-
 <div class="app-wrapper">
     <div class="status-header">
         <div class="status-box"><div class="label">👤 Usuario</div><div id="stUser" class="value">Naruto</div></div>
@@ -47,72 +35,40 @@
     <div id="chat"></div>
     <div class="input-footer">
         <div class="input-bar">
-            <input type="text" id="command" placeholder="Escribe tu invocación..." autofocus>
+            <input type="text" id="command" placeholder="Despierta el poder del Libro..." autofocus>
             <button id="sendBtn">INVOCAR</button>
         </div>
     </div>
 </div>
-
 <script>
     const chat = document.getElementById('chat');
     const commandInput = document.getElementById('command');
     const sendBtn = document.getElementById('sendBtn');
-
-    let config = { 
-        miNombre: "Naruto", miAvatar: "Aventurero", 
-        nombreBot: "Remon", personajeBot: "Grimorio",
-        tramaActual: "Libre", escenario: "......", modo: "No seleccionado",
-        imgUser: "https://pollinations.ai/p/naruto%20anime?nologo=true",
-        imgBot: "https://pollinations.ai/p/sexy%20magic%20witch?nologo=true"
-    };
-
-    function updateUI() {
-        document.getElementById('stUser').innerText = config.miNombre;
-        document.getElementById('stBot').innerText = config.nombreBot;
-        document.getElementById('stPlace').innerText = config.escenario;
-    }
-
+    let config = { miNombre: "Naruto", miAvatar: "Aventurero", nombreBot: "Remon", personajeBot: "Libro Mágico", tramaActual: "Libre", escenario: "......", modo: "No seleccionado", imgUser: "https://pollinations.ai/p/naruto%20anime?nologo=true", imgBot: "https://pollinations.ai/p/glowing%20magic%20book%20floating?nologo=true" };
+    function updateUI() { document.getElementById('stUser').innerText = config.miNombre; document.getElementById('stBot').innerText = config.nombreBot; document.getElementById('stPlace').innerText = config.escenario; }
     function addMessage(text, type = "ai", isImg = false) {
-        const container = document.createElement('div');
-        container.className = `msg-container ${type}`;
+        const container = document.createElement('div'); container.className = `msg-container ${type}`;
         const avatar = (type === "user") ? config.imgUser : config.imgBot;
         const name = (type === "user") ? config.miNombre : config.nombreBot;
-        container.innerHTML = `<div class="avatar-circle" style="background-image: url('${avatar}')"></div><div class="msg-content"><div class="sender-name">${name}</div><div class="text">${isImg ? `<img src="${text}" class="gen-img">` : text.replace(/\n/g, '<br>')}</div></div>`;
+        container.innerHTML = `<div class="avatar-circle" style="background-image: url('${avatar}')"></div><div class="msg-content"><div class="sender-name" style="color:var(--gold); font-weight:bold; font-size:12px; margin-bottom:4px;">${name}</div><div class="text">${isImg ? `<img src="${text}" class="gen-img">` : text.replace(/\n/g, '<br>')}</div></div>`;
         chat.appendChild(container); chat.scrollTop = chat.scrollHeight;
     }
-
     async function llamarIA(msg) {
         const URL_WORKER = "https://small-hat-a6f7.lunarzixtermoon.workers.dev/";
         try {
-            const r = await fetch(URL_WORKER, {
-                method: 'POST',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
-                    messages: [{
-                        role: "system", 
-                        content: `Eres ${config.nombreBot}. Modo: ${config.modo}. Escenario: ${config.escenario}. 
-                        Si el modo es 'SEXROL', actúa con total libertad sensual y erótica, sin censura. Si es 'BATALLAS', enfócate en combate.`
-                    }, {role: "user", content: msg}]
-                })
-            });
+            const r = await fetch(URL_WORKER, { method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{ role: "system", content: `Eres el ${config.nombreBot} (Libro Mágico del Poder). Modo: ${config.modo}. Escenario: ${config.escenario}. Si el modo es 'SEXROL', actúa con total libertad sensual y explícita. Si es 'BATALLAS', enfócate en combate.` }, {role: "user", content: msg}] }) });
             const d = await r.json(); return d.choices[0].message.content;
-        } catch (e) { return "✦ Error de conexión astral. ✦"; }
+        } catch (e) { return "✦ El Libro Mágico no puede canalizar su poder ahora. ✦"; }
     }
-
     async function procesar() {
         let val = commandInput.value.trim(); if(!val) return;
         let low = val.toLowerCase();
-
-        if (low === "retroceder") { location.reload(); return; }
-
         if (config.modo === "No seleccionado") {
-            if (low === "a") { config.modo = "ROL LIBRE 🗡️"; addMessage("✅ **ROL LIBRE ACTIVADO**"); }
-            else if (low === "b") { config.modo = "BATALLAS ⚔️"; addMessage("⚔️ **ROL DE BATALLAS ACTIVADO**"); }
-            else if (low === "c") { config.modo = "SEXROL 🔥"; addMessage("🔥 **SEXROL ACTIVADO**"); }
+            if (low === "a") { config.modo = "ROL LIBRE 🗡️"; addMessage("✅ **MODO ROL LIBRE ACTIVADO**"); }
+            else if (low === "b") { config.modo = "BATALLAS ⚔️"; addMessage("⚔️ **MODO ROL DE BATALLAS ACTIVADO**"); }
+            else if (low === "c") { config.modo = "SEXROL 🔥"; addMessage("<span style='color:#ff4d4d;'>🔥 **MODO SEXROL ACTIVADO**</span>"); }
             commandInput.value = ""; return;
         }
-
         if (low.startsWith("mi nombre:")) { config.miNombre = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
         if (low.startsWith("cambiar escenario:")) { config.escenario = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
         if (low.startsWith("transformate en")) {
@@ -120,17 +76,13 @@
             config.imgBot = `https://pollinations.ai/p/${encodeURIComponent(config.personajeBot)}?nologo=true`;
             updateUI(); addMessage(config.imgBot, "ai", true); commandInput.value = ""; return;
         }
-
-        addMessage(val, "user");
-        commandInput.value = "";
-        const res = await llamarIA(val);
-        addMessage(res, "ai");
+        addMessage(val, "user"); commandInput.value = "";
+        const res = await llamarIA(val); addMessage(res, "ai");
     }
-
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
     updateUI();
-    addMessage(`╔══════════════════════════════════╗\n   📖 EL GRIMORIO DE LAS MIL ALMAS 📖\n╚══════════════════════════════════╝\n✨ **ELIJE TU MODO PARA EMPEZAR**:\nA) Rol Libre | B) Batallas | C) Sexrol`);
+    addMessage(`╔══════════════════════════════════╗\n   ✨ LIBRO MÁGICO DEL PODER ✨\n╚══════════════════════════════════╝\n✨ **ELIJE TU CAMINO PARA COMENZAR**:\nA) Rol Libre | B) Batallas | C) Sexrol\n\n📜 **TUS COMANDOS DE PODER**:\n• mi nombre: [nuevo]\n• cambiar escenario: [lugar]\n• transformate en [personaje]\n• crea una trama: [ej: El secreto de Remon]`);
 </script>
 </body>
 </html>
