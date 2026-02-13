@@ -3,49 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRIMORIO v9.0</title>
+    <title>GRIMORIO v10.0 - PERCHANCE STYLE</title>
     <style>
-        :root { --gold: #ffcc00; --dark: #0a0a0a; --accent: #00e5ff; --panel-bg: rgba(15, 15, 15, 0.98); }
+        :root { --gold: #ffcc00; --bg: #121212; --user-blue: #4fc3f7; }
         
-        body, html { height: 100%; margin: 0; padding: 0; background: #000; color: #e0e0e0; font-family: 'Georgia', serif; overflow: hidden; }
+        body, html { height: 100%; margin: 0; padding: 0; background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; }
 
         .app-wrapper { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
 
-        /* PANEL SUPERIOR REFORZADO */
+        /* HEADER COMPACTO */
         .status-header {
-            background: var(--panel-bg); border-bottom: 3px solid var(--gold);
+            background: #1a1a1a; border-bottom: 1px solid #333;
             display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 15px; padding: 15px 25px; box-shadow: 0 5px 20px #000; z-index: 10;
+            padding: 10px 20px; z-index: 10;
         }
-        .status-box { border-left: 3px solid var(--gold); padding-left: 15px; }
-        .label { font-size: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
-        .value { font-size: 20px; font-weight: bold; color: #fff; margin-top: 5px; }
+        .status-box { border-left: 1px solid #444; padding-left: 10px; }
+        .label { font-size: 10px; color: #888; text-transform: uppercase; }
+        .value { font-size: 14px; font-weight: bold; color: var(--gold); }
 
-        /* CHAT */
+        /* CHAT ESTILO PERCHANCE */
         #chat {
-            flex: 1; overflow-y: auto; padding: 30px 15%;
-            background: radial-gradient(circle, #151515 0%, #000 100%);
-            display: flex; flex-direction: column;
+            flex: 1; overflow-y: auto; padding: 20px 10%;
+            background: #121212; display: flex; flex-direction: column;
         }
-        .message { margin-bottom: 30px; font-size: 18px; line-height: 1.6; animation: fadeIn 0.4s; }
-        .user-tag { color: var(--accent); font-weight: bold; text-shadow: 0 0 5px var(--accent); }
-        .bot-tag { color: var(--gold); font-weight: bold; text-shadow: 0 0 5px var(--gold); }
 
-        /* IMÁGENES GRANDES */
+        .msg-container { display: flex; gap: 15px; margin-bottom: 20px; animation: fadeIn 0.3s ease; }
+        
+        /* Iconos circulares */
+        .avatar-circle {
+            width: 45px; height: 45px; border-radius: 50%;
+            background-size: cover; background-position: center;
+            border: 2px solid #333; flex-shrink: 0;
+        }
+
+        .msg-content { display: flex; flex-direction: column; }
+        .sender-name { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+        .user .sender-name { color: var(--user-blue); }
+        .ai .sender-name { color: var(--gold); }
+        .text { font-size: 15px; line-height: 1.4; color: #ddd; }
+
+        /* Imágenes */
         .gen-img { 
-            width: 100%; max-width: 700px; border-radius: 12px; border: 3px solid var(--gold);
-            margin: 20px 0; display: block; box-shadow: 0 0 30px rgba(255, 204, 0, 0.3);
+            width: 100%; max-width: 500px; border-radius: 8px; 
+            margin-top: 10px; border: 1px solid #444;
         }
 
-        /* BARRA DE ENTRADA FIJA */
-        .input-footer { background: #0a0a0a; border-top: 2px solid #333; padding: 20px 15%; z-index: 10; }
-        .input-bar { display: flex; gap: 15px; background: #1a1a1a; padding: 12px 25px; border-radius: 40px; border: 1px solid var(--gold); }
-        input { flex: 1; background: transparent; border: none; color: #fff; font-size: 18px; outline: none; }
-        button { background: var(--gold); color: #000; border: none; padding: 10px 35px; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        /* INPUT FIJO */
+        .input-footer { background: #1a1a1a; padding: 15px 10%; border-top: 1px solid #333; }
+        .input-bar { display: flex; gap: 10px; background: #252525; padding: 10px 20px; border-radius: 5px; border: 1px solid #444; }
+        input { flex: 1; background: transparent; border: none; color: #fff; font-size: 15px; outline: none; }
+        button { background: #333; color: #eee; border: 1px solid #555; padding: 5px 20px; cursor: pointer; border-radius: 3px; }
+        button:hover { background: #444; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        #chat::-webkit-scrollbar { width: 8px; }
-        #chat::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        #chat::-webkit-scrollbar { width: 6px; }
+        #chat::-webkit-scrollbar-thumb { background: #333; }
     </style>
 </head>
 <body>
@@ -54,7 +66,7 @@
     <div class="status-header">
         <div class="status-box"><div class="label">👤 Identidad</div><div id="stUser" class="value">Hamura</div></div>
         <div class="status-box"><div class="label">🤖 Entidad</div><div id="stBot" class="value">Grimorio</div></div>
-        <div class="status-box"><div class="label">🛡️ Avatar</div><div id="stAvatar" class="value">Aventurero</div></div>
+        <div class="status-box"><div class="label">🛡️ Tu Forma</div><div id="stAvatar" class="value">Aventurero</div></div>
         <div class="status-box"><div class="label">📍 Ubicación</div><div id="stPlace" class="value">El Vacío</div></div>
     </div>
 
@@ -62,8 +74,8 @@
 
     <div class="input-footer">
         <div class="input-bar">
-            <input type="text" id="command" placeholder="Escribe tu comando..." autofocus>
-            <button id="sendBtn">INVOCAR</button>
+            <input type="text" id="command" placeholder="Type your reply here..." autofocus>
+            <button id="sendBtn">send</button>
         </div>
     </div>
 </div>
@@ -74,77 +86,92 @@
     const sendBtn = document.getElementById('sendBtn');
 
     let api_key = ""; 
-    let config = { miNombre: "Hamura", miAvatar: "Aventurero", nombreBot: "Grimorio", personajeBot: "Espíritu del Tomo", escenario: "El Vacío", destino: "" };
+    let config = { 
+        miNombre: "Hamura", 
+        miAvatar: "Aventurero", 
+        nombreBot: "Grimorio", 
+        personajeBot: "Grimorio",
+        imgUser: "https://image.pollinations.ai/prompt/human%20adventurer%20anime?nologo=true",
+        imgBot: "https://image.pollinations.ai/prompt/magic%20book%20dark?nologo=true",
+        escenario: "El Vacío", 
+        destino: "" 
+    };
 
     function updateUI() {
         document.getElementById('stUser').innerText = config.miNombre;
         document.getElementById('stAvatar').innerText = config.miAvatar;
-        document.getElementById('stBot').innerText = config.nombreBot; // Nombre fijo
+        document.getElementById('stBot').innerText = config.nombreBot;
         document.getElementById('stPlace').innerText = config.escenario;
     }
 
     function addMessage(text, type = "ai", isImg = false) {
-        const div = document.createElement('div');
-        div.className = `message ${type}`;
-        let tag = (type === "user") ? `<span class="user-tag">[${config.miNombre}]</span>` : `<span class="bot-tag">[${config.nombreBot}]</span>`;
-        div.innerHTML = isImg ? `${tag}<br><img src="${text}" class="gen-img">` : `${tag}<br>${text.replace(/\n/g, '<br>')}`;
-        chat.appendChild(div);
+        const container = document.createElement('div');
+        container.className = `msg-container ${type}`;
+        
+        const avatarUrl = (type === "user") ? config.imgUser : config.imgBot;
+        const name = (type === "user") ? config.miNombre : config.nombreBot;
+
+        container.innerHTML = `
+            <div class="avatar-circle" style="background-image: url('${avatarUrl}')"></div>
+            <div class="msg-content">
+                <span class="sender-name">${name}</span>
+                <div class="text">${isImg ? `<img src="${text}" class="gen-img">` : text.replace(/\n/g, '<br>')}</div>
+            </div>
+        `;
+        
+        chat.appendChild(container);
         chat.scrollTop = chat.scrollHeight;
     }
 
-    function invocarVision(p) {
-        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*9999)}`;
-        addMessage(url, "ai", true);
-    }
-
-    function mostrarBienvenida() {
-        const texto = `✨ **PASO 1: ELIGE TU DESTINO**\nA) Rol Libre 🗡️ | B) Batallas ⚔️ | C) Sexrol 🔥\n\n✨ **PASO 2: INVOCACIÓN**\nDime: "Transformate en [personaje]"\n\n──────────────────────────────────\n📜 **COMANDOS DE ALTA HECHICERÍA**\n👤 **Sobre ti:**\n• mi nombre: [nuevo nombre]\n• mi avatar: [apariencia] *(Generará tu imagen)*\n\n🤖 **Sobre el Bot:**\n• nombre bot: [nuevo nombre]\n• Transformate en: [apariencia] *(Cambia su forma y genera imagen)*\n\n♻️ **retroceder** (reinicia todo)`;
-        addMessage(texto);
-    }
+    function getImg(prompt) { return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&nologo=true&seed=${Math.floor(Math.random()*9999)}`; }
 
     async function llamarIA(msg) {
-        if (!api_key) { api_key = prompt("🔑 API KEY DE GROQ:"); if (!api_key) return "Error."; }
+        if (!api_key) { api_key = prompt("API KEY DE GROQ:"); if (!api_key) return "Error."; }
         try {
             const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: 'POST',
                 headers: { "Authorization": `Bearer ${api_key}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
-                    messages: [{role:"system", content:`Eres ${config.nombreBot} actuando como ${config.personajeBot}. Modo: ${config.destino}. Usuario: ${config.miNombre} (${config.miAvatar}).`}, {role:"user", content:msg}]
+                    messages: [{role:"system", content:`Actúa como ${config.nombreBot}. Tienes forma de ${config.personajeBot}. Lugar: ${config.escenario}.`}, {role:"user", content:msg}]
                 })
             });
             const d = await r.json(); return d.choices[0].message.content;
-        } catch (e) { return "Error de conexión mística."; }
+        } catch (e) { return "Error místico."; }
     }
 
     async function procesar() {
         let val = commandInput.value.trim(); if(!val) return;
         let low = val.toLowerCase();
 
-        if (low === "retroceder") { location.reload(); return; }
-
         if (low.startsWith("mi avatar:")) {
-            config.miAvatar = val.split(":")[1].trim(); updateUI();
-            addMessage(`✨ Has cambiado tu avatar a: ${config.miAvatar}`);
-            invocarVision(`Portrait of ${config.miAvatar}, master quality, fantasy style`);
+            let desc = val.split(":")[1].trim();
+            config.miAvatar = desc;
+            config.imgUser = getImg(desc);
+            updateUI();
+            addMessage(`✨ Generando tu nueva apariencia: **${desc}**...`, "ai");
+            addMessage(`✅ Tu avatar ha sido actualizado.`, "ai");
+            addMessage(config.imgUser, "ai", true);
             commandInput.value = ""; return;
         }
+
         if (low.startsWith("transformate en")) {
-            config.personajeBot = val.replace(/transformate en/i, "").replace(/:/g, "").trim();
-            // NO cambiamos config.nombreBot aquí
-            addMessage(`🔮 El bot toma la forma de: ${config.personajeBot}`);
-            invocarVision(`Epic design of ${config.personajeBot}, high resolution, anime style`);
+            let desc = val.replace(/transformate en/i, "").replace(/:/g, "").trim();
+            config.personajeBot = desc;
+            config.imgBot = getImg(desc);
+            updateUI();
+            addMessage(`✨ Iniciando Transmutación en **${desc}**...`, "ai");
+            addMessage(`*El resplandor cesa...*\nSoy un **${desc}**. ¿Qué aventura nos espera?`, "ai");
+            addMessage(config.imgBot, "ai", true);
             commandInput.value = ""; return;
         }
+
+        // Resto de comandos
         if (low.startsWith("mi nombre:")) { config.miNombre = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
         if (low.startsWith("nombre bot:")) { config.nombreBot = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
-        if (low.startsWith("escenario:")) { config.escenario = val.split(":")[1].trim(); updateUI(); addMessage(`📍 Lugar: ${config.escenario}`); invocarVision(config.escenario + " landscape"); commandInput.value = ""; return; }
 
         if (!config.destino) {
-            if (low === "a") config.destino = "Rol Libre 🗡️";
-            else if (low === "b") config.destino = "Batallas ⚔️";
-            else if (low === "c") config.destino = "Sexrol 🔥";
-            if (config.destino) { updateUI(); addMessage(`⚔️ Destino Sellado: ${config.destino}`); }
+            if (["a","b","c"].includes(low)) { config.destino = low; addMessage("Destino fijado."); }
             commandInput.value = ""; return;
         }
 
@@ -154,8 +181,9 @@
 
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
+    
     updateUI();
-    mostrarBienvenida();
+    addMessage("✨ **EL LIBRO DE LAS ALMAS TE SALUDA**\n\n1. Elige tu destino: **A**, **B** o **C**.\n2. Usa `mi avatar: [personaje]`\n3. Usa `Transformate en [personaje]`");
 </script>
 </body>
 </html>
