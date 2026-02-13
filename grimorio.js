@@ -18,13 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function llamarIA(mensajeUsuario) {
         if (!api_key) {
-            api_key = prompt("🔑 Introduce tu API KEY (la que empieza por AIza...):");
+            api_key = prompt("🔑 Introduce tu API KEY (AIza...):");
             if (!api_key) return "❌ Sin llave no hay magia.";
         }
 
         try {
-            // RUTA FORZADA A V1 ESTABLE - SIN BETA
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${api_key}`;
+            // USAMOS 'gemini-1.5-flash-latest' QUE ES EL NOMBRE MÁS COMPATIBLE EN 2026
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${api_key}`;
             
             const response = await fetch(url, {
                 method: 'POST',
@@ -41,18 +41,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (data.error) {
-                // Si el error persiste, es probable que la API Key sea de una región restringida o el modelo tenga otro nombre en tu cuenta
-                return "❌ Error del Grimorio: " + data.error.message;
+                // Si falla el 'flash', el libro nos avisará detalladamente
+                return "❌ Error místico: " + data.error.message;
             }
 
             if (data.candidates && data.candidates[0].content) {
                 return data.candidates[0].content.parts[0].text;
             } else {
-                return "❌ El libro brilla pero no salen palabras... (Error de respuesta)";
+                return "❌ El libro brilla pero no salen palabras...";
             }
             
         } catch (error) {
-            return "❌ El ritual falló por un problema de conexión.";
+            return "❌ Fallo de conexión astral.";
         }
     }
 
@@ -70,20 +70,14 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (b.includes("mi nombre:")) {
             userName = val.split(":")[1].trim();
             addMessage(`Reconocido. Saludos, Hechicero **${userName}**.`, "ai");
-        } else if (b === "retroceder") {
-            chat.innerHTML = "";
-            bienvenida();
-        } 
-        else {
+        } else {
             const cargando = document.createElement('div');
             cargando.className = 'message ai';
             cargando.innerHTML = "<em>📖 El libro está escribiendo...</em>";
             chat.appendChild(cargando);
 
             const respuestaIA = await llamarIA(val);
-            if (chat.lastChild && chat.lastChild.innerHTML.includes("escribiendo")) {
-                chat.lastChild.remove(); 
-            }
+            chat.lastChild.remove(); 
             addMessage(respuestaIA, "ai", personajeBot);
         }
     }
@@ -91,9 +85,5 @@ document.addEventListener("DOMContentLoaded", () => {
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
-    function bienvenida() {
-        addMessage("📖 **EL GRIMORIO HA DESPERTADO**\n\nUsa `mi nombre: [tu nombre]` y `Transformate en [personaje]`.\n\nEscribe cualquier cosa para hablar con la inteligencia.");
-    }
-
-    bienvenida();
+    addMessage("📖 **GRIMORIO ACTUALIZADO (V2026)**\nEscribe cualquier cosa para despertar la IA.");
 });
