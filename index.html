@@ -2,18 +2,29 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Grimorio de las Mil Almas</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Grimorio de las Mil Almas</title>
+    <style>
+        /* Pongo el estilo aquí directamente para que no necesites un tercer archivo */
+        body { background: #1a1a1a; color: #d4af37; font-family: serif; display: flex; justify-content: center; padding: 20px; }
+        .container { width: 100%; max-width: 600px; background: #2a2a2a; border: 2px solid #8b4513; border-radius: 10px; padding: 20px; box-shadow: 0 0 15px #000; }
+        #chat { height: 400px; overflow-y: auto; border-bottom: 1px solid #444; margin-bottom: 10px; padding: 10px; display: flex; flex-direction: column; background: #111; }
+        .message { margin: 10px 0; padding: 8px; border-radius: 5px; }
+        .ai { background: #222; border-left: 4px solid #d4af37; align-self: flex-start; }
+        .user { background: #333; align-self: flex-end; color: #87ceeb; border-right: 4px solid #87ceeb; }
+        .input-area { display: flex; gap: 10px; }
+        input { flex: 1; background: #000; border: 1px solid #d4af37; color: #fff; padding: 10px; }
+        button { background: #8b4513; color: #fff; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div id="chat" class="chat-box"></div>
+        <div id="chat"></div>
         <div class="input-area">
-            <input type="text" id="command" placeholder="Escribe tu comando de hechicería..." autocomplete="off">
-            <button onclick="sendCommand()">Invocar</button>
+            <input type="text" id="command" placeholder="Escribe tu hechizo..." autofocus>
+            <button id="sendBtn">Invocar</button>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script src="grimorio.js"></script>
 </body>
 </html>
