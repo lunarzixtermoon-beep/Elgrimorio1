@@ -18,12 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function llamarIA(mensajeUsuario) {
         if (!api_key) {
-            api_key = prompt("🔑 Introduce tu API KEY (AIza...):");
+            api_key = prompt("🔑 Introduce tu API KEY (la que empieza por AIza...):");
             if (!api_key) return "❌ Sin llave no hay magia.";
         }
 
         try {
-            // USANDO LA RUTA OFICIAL V1 (Más estable)
+            // RUTA FORZADA A V1 ESTABLE - SIN BETA
             const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${api_key}`;
             
             const response = await fetch(url, {
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({
                     contents: [{ 
                         parts: [{ 
-                            text: `Actúa como ${personajeBot}. Instrucciones: Responde siempre en español, de forma inmersiva. El usuario se llama ${userName}. Mensaje: ${mensajeUsuario}` 
+                            text: `Actúa como ${personajeBot}. Instrucciones: Responde siempre en español. El usuario se llama ${userName}. Mensaje: ${mensajeUsuario}` 
                         }] 
                     }]
                 })
@@ -41,14 +41,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (data.error) {
-                // Si el error persiste, probamos con gemini-1.5-pro o revisamos la ruta
+                // Si el error persiste, es probable que la API Key sea de una región restringida o el modelo tenga otro nombre en tu cuenta
                 return "❌ Error del Grimorio: " + data.error.message;
             }
 
-            return data.candidates[0].content.parts[0].text;
+            if (data.candidates && data.candidates[0].content) {
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                return "❌ El libro brilla pero no salen palabras... (Error de respuesta)";
+            }
             
         } catch (error) {
-            return "❌ El ritual falló. Revisa tu llave o conexión.";
+            return "❌ El ritual falló por un problema de conexión.";
         }
     }
 
@@ -77,7 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
             chat.appendChild(cargando);
 
             const respuestaIA = await llamarIA(val);
-            chat.lastChild.remove(); 
+            if (chat.lastChild && chat.lastChild.innerHTML.includes("escribiendo")) {
+                chat.lastChild.remove(); 
+            }
             addMessage(respuestaIA, "ai", personajeBot);
         }
     }
@@ -86,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
     function bienvenida() {
-        addMessage("📖 **EL GRIMORIO HA DESPERTADO**\n\nUsa `mi nombre: [tu nombre]` y `Transformate en [personaje]`.\n\nEscribe cualquier cosa para que la inteligencia del libro te responda.");
+        addMessage("📖 **EL GRIMORIO HA DESPERTADO**\n\nUsa `mi nombre: [tu nombre]` y `Transformate en [personaje]`.\n\nEscribe cualquier cosa para hablar con la inteligencia.");
     }
 
     bienvenida();
