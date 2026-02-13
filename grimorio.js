@@ -18,40 +18,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function llamarIA(mensajeUsuario) {
         if (!api_key) {
-            let pass = prompt("🔑 PEGA TU LLAVE GSK AQUÍ:");
-            if (!pass) return "❌ No hay llave, no hay magia.";
-            // Limpieza absoluta de espacios y caracteres invisibles
-            api_key = pass.trim().replace(/[\u200B-\u200D\uFEFF]/g, ""); 
+            let pass = prompt("🔑 PEGA TU API KEY DE GEMINI (AIza...):");
+            if (!pass) return "❌ Sin la llave de Google, el libro no abre.";
+            api_key = pass.trim();
         }
 
         try {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            // RUTA ESTABLE V1 PARA EVITAR EL ERROR DE "NOT FOUND"
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${api_key}`;
+            
+            const response = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${api_key}`
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
-                    messages: [
-                        { role: "system", content: `Eres ${personajeBot}. Responde en español como un grimorio mágico. El usuario es ${userName}.` },
-                        { role: "user", content: mensajeUsuario }
-                    ]
+                    contents: [{ 
+                        parts: [{ 
+                            text: `Eres ${personajeBot}. Instrucciones: Responde en español, de forma mística. El usuario es ${userName}. Mensaje: ${mensajeUsuario}` 
+                        }] 
+                    }]
                 })
             });
-
-            const data = await response.json();
             
+            const data = await response.json();
+
             if (data.error) {
-                let errorMsg = data.error.message;
-                api_key = ""; // Resetear para poder intentar de nuevo
-                return `❌ Error de la llave: ${errorMsg}. (Asegúrate que empiece por gsk_)`;
+                api_key = ""; // Reset para reintentar
+                return "❌ Error de Gemini: " + data.error.message;
             }
 
-            return data.choices[0].message.content;
+            return data.candidates[0].content.parts[0].text;
             
         } catch (error) {
-            return "❌ Fallo en la conexión astral.";
+            return "❌ Fallo en la conexión con los servidores de Google.";
         }
     }
 
@@ -63,18 +61,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const cargando = document.createElement('div');
         cargando.className = 'message ai';
-        cargando.innerHTML = "<em>⚡ La Fuerza Mística está pensando...</em>";
+        cargando.innerHTML = "<em>📖 Gemini está leyendo las estrellas...</em>";
         chat.appendChild(cargando);
 
         const respuestaIA = await llamarIA(val);
-        if (chat.lastChild && chat.lastChild.innerHTML.includes("pensando")) {
-            chat.lastChild.remove(); 
-        }
+        chat.lastChild.remove(); 
         addMessage(respuestaIA, "ai", personajeBot);
     }
 
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
-    addMessage("📖 **SISTEMA REINICIADO**\nEscribe algo para probar tu nueva llave `gsk_`.");
+    addMessage("📖 **RETORNANDO AL PODER DE GEMINI**\nEscribe algo y usa tu llave `AIza...`.");
 });
