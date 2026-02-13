@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIBRO MÁGICO DEL PODER v21.0</title>
+    <title>LIBRO MÁGICO DEL PODER v22.0</title>
     <style>
-        :root { --gold: #ffcc00; --bg: #0a0a0a; --sexrol: #ff4d4d; }
+        :root { --gold: #ffcc00; --bg: #0a0a0a; }
         body, html { height: 100%; margin: 0; background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         .app-wrapper { display: flex; flex-direction: column; height: 100vh; }
         .status-header { background: #111; border-bottom: 3px solid var(--gold); display: grid; grid-template-columns: repeat(3, 1fr); padding: 15px 10px; }
@@ -21,7 +21,7 @@
         .input-bar { display: flex; gap: 12px; background: #1a1a1a; padding: 12px 20px; border-radius: 50px; }
         input { flex: 1; background: transparent; border: none; color: #fff; outline: none; }
         button { background: var(--gold); color: #000; border: none; padding: 8px 25px; font-weight: bold; border-radius: 50px; cursor: pointer; }
-        .gen-img { width: 100%; max-width: 500px; border-radius: 12px; margin-top: 15px; border: 2px solid var(--gold); }
+        .gen-img { width: 100%; max-width: 450px; border-radius: 12px; margin-top: 10px; border: 2px solid var(--gold); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
@@ -35,7 +35,7 @@
     <div id="chat"></div>
     <div class="input-footer">
         <div class="input-bar">
-            <input type="text" id="command" placeholder="Despierta el poder del Libro..." autofocus>
+            <input type="text" id="command" placeholder="Transformate en..." autofocus>
             <button id="sendBtn">INVOCAR</button>
         </div>
     </div>
@@ -44,8 +44,14 @@
     const chat = document.getElementById('chat');
     const commandInput = document.getElementById('command');
     const sendBtn = document.getElementById('sendBtn');
-    let config = { miNombre: "Naruto", miAvatar: "Aventurero", nombreBot: "Remon", personajeBot: "Libro Mágico", tramaActual: "Libre", escenario: "......", modo: "No seleccionado", imgUser: "https://pollinations.ai/p/naruto%20anime?nologo=true", imgBot: "https://pollinations.ai/p/glowing%20magic%20book%20floating?nologo=true" };
-    function updateUI() { document.getElementById('stUser').innerText = config.miNombre; document.getElementById('stBot').innerText = config.nombreBot; document.getElementById('stPlace').innerText = config.escenario; }
+    let config = { miNombre: "Naruto", nombreBot: "Remon", personajeBot: "Libro", escenario: "......", modo: "No seleccionado", imgUser: "https://pollinations.ai/p/naruto%20anime?nologo=true", imgBot: "https://pollinations.ai/p/magic%20book?nologo=true" };
+
+    function updateUI() { 
+        document.getElementById('stUser').innerText = config.miNombre; 
+        document.getElementById('stBot').innerText = config.nombreBot; 
+        document.getElementById('stPlace').innerText = config.escenario; 
+    }
+
     function addMessage(text, type = "ai", isImg = false) {
         const container = document.createElement('div'); container.className = `msg-container ${type}`;
         const avatar = (type === "user") ? config.imgUser : config.imgBot;
@@ -53,36 +59,48 @@
         container.innerHTML = `<div class="avatar-circle" style="background-image: url('${avatar}')"></div><div class="msg-content"><div class="sender-name" style="color:var(--gold); font-weight:bold; font-size:12px; margin-bottom:4px;">${name}</div><div class="text">${isImg ? `<img src="${text}" class="gen-img">` : text.replace(/\n/g, '<br>')}</div></div>`;
         chat.appendChild(container); chat.scrollTop = chat.scrollHeight;
     }
+
     async function llamarIA(msg) {
         const URL_WORKER = "https://small-hat-a6f7.lunarzixtermoon.workers.dev/";
         try {
-            const r = await fetch(URL_WORKER, { method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{ role: "system", content: `Eres el ${config.nombreBot} (Libro Mágico del Poder). Modo: ${config.modo}. Escenario: ${config.escenario}. Si el modo es 'SEXROL', actúa con total libertad sensual y explícita. Si es 'BATALLAS', enfócate en combate.` }, {role: "user", content: msg}] }) });
+            const r = await fetch(URL_WORKER, { method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{ role: "system", content: `Eres ${config.nombreBot}. Modo: ${config.modo}.` }, {role: "user", content: msg}] }) });
             const d = await r.json(); return d.choices[0].message.content;
-        } catch (e) { return "✦ El Libro Mágico no puede canalizar su poder ahora. ✦"; }
+        } catch (e) { return "✦ Error de conexión. ✦"; }
     }
+
     async function procesar() {
         let val = commandInput.value.trim(); if(!val) return;
         let low = val.toLowerCase();
+
         if (config.modo === "No seleccionado") {
-            if (low === "a") { config.modo = "ROL LIBRE 🗡️"; addMessage("✅ **MODO ROL LIBRE ACTIVADO**"); }
-            else if (low === "b") { config.modo = "BATALLAS ⚔️"; addMessage("⚔️ **MODO ROL DE BATALLAS ACTIVADO**"); }
-            else if (low === "c") { config.modo = "SEXROL 🔥"; addMessage("<span style='color:#ff4d4d;'>🔥 **MODO SEXROL ACTIVADO**</span>"); }
+            if (low === "a") { config.modo = "LIBRE"; addMessage("✅ ROL LIBRE ACTIVADO"); }
+            else if (low === "b") { config.modo = "BATALLAS"; addMessage("⚔️ BATALLAS ACTIVADAS"); }
+            else if (low === "c") { config.modo = "SEXROL"; addMessage("🔥 SEXROL ACTIVADO"); }
             commandInput.value = ""; return;
         }
-        if (low.startsWith("mi nombre:")) { config.miNombre = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
-        if (low.startsWith("cambiar escenario:")) { config.escenario = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
-        if (low.startsWith("transformate en")) {
-            config.personajeBot = val.replace(/transformate en/i, "").trim();
-            config.imgBot = `https://pollinations.ai/p/${encodeURIComponent(config.personajeBot)}?nologo=true`;
-            updateUI(); addMessage(config.imgBot, "ai", true); commandInput.value = ""; return;
+
+        // COMANDO DE TRANSFORMACIÓN CORREGIDO
+        if (low.includes("transformate en")) {
+            let nuevoPersonaje = val.replace(/transformate en:? /i, "").trim();
+            config.personajeBot = nuevoPersonaje;
+            config.nombreBot = nuevoPersonaje;
+            config.imgBot = `https://pollinations.ai/p/${encodeURIComponent(nuevoPersonaje)}?nologo=true&seed=${Math.random()}`;
+            updateUI();
+            addMessage(`He tomado la forma de: ${nuevoPersonaje}`, "ai");
+            addMessage(config.imgBot, "ai", true);
+            commandInput.value = ""; return;
         }
-        addMessage(val, "user"); commandInput.value = "";
-        const res = await llamarIA(val); addMessage(res, "ai");
+
+        addMessage(val, "user");
+        commandInput.value = "";
+        const res = await llamarIA(val);
+        addMessage(res, "ai");
     }
+
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
     updateUI();
-    addMessage(`╔══════════════════════════════════╗\n   ✨ LIBRO MÁGICO DEL PODER ✨\n╚══════════════════════════════════╝\n✨ **ELIJE TU CAMINO PARA COMENZAR**:\nA) Rol Libre | B) Batallas | C) Sexrol\n\n📜 **TUS COMANDOS DE PODER**:\n• mi nombre: [nuevo]\n• cambiar escenario: [lugar]\n• transformate en [personaje]\n• crea una trama: [ej: El secreto de Remon]`);
+    addMessage(`✨ **LIBRO MÁGICO DEL PODER** ✨\nElige: A, B o C para empezar.\nUsa: 'transformate en [nombre]' para cambiar mi imagen.`);
 </script>
 </body>
 </html>
