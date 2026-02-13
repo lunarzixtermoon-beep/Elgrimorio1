@@ -16,52 +16,60 @@ document.addEventListener("DOMContentLoaded", () => {
         chat.scrollTop = chat.scrollHeight;
     }
 
+    // --- CONEXIÓN AL PODER DE OPENAI (CHATGPT) ---
     async function llamarIA(mensajeUsuario) {
         if (!api_key) {
-            let pass = prompt("🔑 PEGA TU API KEY DE GEMINI (AIza...):");
-            if (!pass) return "❌ Sin la llave de Google, el libro no abre.";
+            let pass = prompt("🔑 PEGA TU LLAVE DE CHATGPT (sk-...):");
+            if (!pass) return "❌ El libro se cierra. Se requiere la llave sk.";
             api_key = pass.trim();
         }
 
         try {
-            // RUTA ESTABLE V1 PARA EVITAR EL ERROR DE "NOT FOUND"
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${api_key}`;
-            
-            const response = await fetch(url, {
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${api_key}`
+                },
                 body: JSON.stringify({
-                    contents: [{ 
-                        parts: [{ 
-                            text: `Eres ${personajeBot}. Instrucciones: Responde en español, de forma mística. El usuario es ${userName}. Mensaje: ${mensajeUsuario}` 
-                        }] 
-                    }]
+                    model: "gpt-4o-mini",
+                    messages: [
+                        { 
+                            role: "system", 
+                            content: `Eres ${personajeBot}. Responde siempre en español. Eres un grimorio antiguo y místico. El usuario es el hechicero ${userName}.` 
+                        },
+                        { role: "user", content: mensajeUsuario }
+                    ],
+                    temperature: 0.8
                 })
             });
-            
-            const data = await response.json();
 
+            const data = await response.json();
+            
             if (data.error) {
-                api_key = ""; // Reset para reintentar
-                return "❌ Error de Gemini: " + data.error.message;
+                // Si hay error (como falta de saldo), reseteamos la llave para dejarte intentar de nuevo
+                let msg = data.error.message;
+                api_key = ""; 
+                return "❌ Error de OpenAI: " + msg;
             }
 
-            return data.candidates[0].content.parts[0].text;
+            return data.choices[0].message.content;
             
         } catch (error) {
-            return "❌ Fallo en la conexión con los servidores de Google.";
+            return "❌ El ritual ha fallado. Revisa tu conexión al vacío.";
         }
     }
 
     async function procesar() {
         const val = commandInput.value.trim();
         if(!val) return;
+        
         addMessage(val, "user");
         commandInput.value = "";
 
         const cargando = document.createElement('div');
         cargando.className = 'message ai';
-        cargando.innerHTML = "<em>📖 Gemini está leyendo las estrellas...</em>";
+        cargando.innerHTML = "<em>📖 Consultando los planos astrales de OpenAI...</em>";
         chat.appendChild(cargando);
 
         const respuestaIA = await llamarIA(val);
@@ -72,5 +80,5 @@ document.addEventListener("DOMContentLoaded", () => {
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
-    addMessage("📖 **RETORNANDO AL PODER DE GEMINI**\nEscribe algo y usa tu llave `AIza...`.");
+    addMessage("📖 **GRIMORIO VINCULADO A CHATGPT**\nEscribe un mensaje para activar el sello.");
 });
