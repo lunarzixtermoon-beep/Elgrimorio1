@@ -16,60 +16,50 @@ document.addEventListener("DOMContentLoaded", () => {
         chat.scrollTop = chat.scrollHeight;
     }
 
-    // --- CONEXIÓN AL PODER DE OPENAI (CHATGPT) ---
     async function llamarIA(mensajeUsuario) {
         if (!api_key) {
-            let pass = prompt("🔑 PEGA TU LLAVE DE CHATGPT (sk-...):");
-            if (!pass) return "❌ El libro se cierra. Se requiere la llave sk.";
+            let pass = prompt("🔑 PEGA TU LLAVE GRATUITA DE GROQ (gsk_...):");
+            if (!pass) return "❌ Sin la llave gsk, la magia no fluye.";
             api_key = pass.trim();
         }
 
         try {
-            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${api_key}`
+                    "Authorization": `Bearer ${api_key}`,
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: "gpt-4o-mini",
+                    model: "llama-3.3-70b-versatile", // El modelo más potente y gratuito de Groq
                     messages: [
-                        { 
-                            role: "system", 
-                            content: `Eres ${personajeBot}. Responde siempre en español. Eres un grimorio antiguo y místico. El usuario es el hechicero ${userName}.` 
-                        },
+                        { role: "system", content: `Eres ${personajeBot}. Responde en español de forma mística y épica. El usuario es el hechicero ${userName}.` },
                         { role: "user", content: mensajeUsuario }
-                    ],
-                    temperature: 0.8
+                    ]
                 })
             });
 
             const data = await response.json();
-            
             if (data.error) {
-                // Si hay error (como falta de saldo), reseteamos la llave para dejarte intentar de nuevo
-                let msg = data.error.message;
-                api_key = ""; 
-                return "❌ Error de OpenAI: " + msg;
+                api_key = ""; // Reset si la llave falla
+                return "❌ Error de Groq: " + data.error.message;
             }
-
             return data.choices[0].message.content;
             
         } catch (error) {
-            return "❌ El ritual ha fallado. Revisa tu conexión al vacío.";
+            return "❌ Fallo en la invocación. Revisa la llave gsk.";
         }
     }
 
     async function procesar() {
         const val = commandInput.value.trim();
         if(!val) return;
-        
         addMessage(val, "user");
         commandInput.value = "";
 
         const cargando = document.createElement('div');
         cargando.className = 'message ai';
-        cargando.innerHTML = "<em>📖 Consultando los planos astrales de OpenAI...</em>";
+        cargando.innerHTML = "<em>⚡ Invocando fuerza mística gratuita...</em>";
         chat.appendChild(cargando);
 
         const respuestaIA = await llamarIA(val);
@@ -80,5 +70,5 @@ document.addEventListener("DOMContentLoaded", () => {
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
-    addMessage("📖 **GRIMORIO VINCULADO A CHATGPT**\nEscribe un mensaje para activar el sello.");
+    addMessage("📖 **GRIMORIO ESTABLE ACTIVADO**\nUsa tu llave `gsk_` para empezar sin pagar un solo centavo.");
 });
