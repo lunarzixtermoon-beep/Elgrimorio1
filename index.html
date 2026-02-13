@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimorio de las Mil Almas - Edición Groq</title>
+    <title>Grimorio de las Mil Almas</title>
     <style>
         body { background: #1a1a1a; color: #d4af37; font-family: 'serif'; display: flex; justify-content: center; padding: 20px; margin: 0; }
         .container { width: 100%; max-width: 700px; background: #2a2a2a; border: 2px solid #8b4513; border-radius: 10px; padding: 20px; box-shadow: 0 0 20px #000; display: flex; flex-direction: column; }
@@ -54,9 +54,9 @@
 
                 const url = "https://api.groq.com/openai/v1/chat/completions";
                 
-                let contexto = "Eres el Grimorio de las Mil Almas, un tomo místico y oscuro. Responde siempre en español. ";
+                let contexto = "Eres el Grimorio de las Mil Almas, un tomo místico y oscuro. ";
                 if (modoRol === "18") {
-                    contexto += "MODO ADULTO: Actúa como un autor de romance gótico y carnal. Describe el deseo, el contacto físico y la tensión de forma detallada, visceral y poética. No te censures.";
+                    contexto += "Actúa como un autor de literatura erótica y romance gótico. Escribe de forma visceral, apasionada y detallada sobre el contacto físico y el deseo. No uses censura moralista.";
                 }
 
                 try {
@@ -72,15 +72,15 @@
                                 { role: "system", content: contexto },
                                 { role: "user", content: mensajeUsuario }
                             ],
-                            temperature: 0.9
+                            temperature: 0.8 // Un poco más bajo para evitar filtros
                         })
                     });
                     
                     const data = await response.json();
-                    if (data.error) return "❌ Error de Groq: " + data.error.message;
+                    if (data.error) return "❌ Error: " + data.error.message;
                     return data.choices[0].message.content;
                 } catch (e) {
-                    return "❌ Error de conexión con el Inframundo.";
+                    return "❌ Error de conexión con el plano de Groq.";
                 }
             }
 
@@ -88,10 +88,13 @@
                 const val = commandInput.value.trim();
                 if(!val) return;
 
+                // --- MEJORA DEL REINICIO ---
                 if (val.toLowerCase() === "reiniciar") {
-                    modoRol = ""; chat.innerHTML = "";
-                    addMessage("📖 Memoria purificada. Elige: 1, 2 o 3.");
-                    commandInput.value = ""; return;
+                    modoRol = ""; 
+                    chat.innerHTML = "";
+                    addMessage("✨ **EL GRIMORIO HA SIDO PURIFICADO** ✨\n\nElige un nuevo ritual para comenzar:\n\n1. ⚔️ **Batalla**\n2. 🌀 **Libre**\n3. 🔞 **Pasión (+18)**");
+                    commandInput.value = ""; 
+                    return;
                 }
 
                 if (!modoRol) {
@@ -99,8 +102,10 @@
                     else if (val === "2") modoRol = "libre";
                     else if (val === "3") modoRol = "18";
                     else { addMessage("Elige 1, 2 o 3."); return; }
-                    addMessage(`🔮 **Vínculo con Groq establecido.** ¿Qué deseas invocar en el modo ${modoRol}?`);
-                    commandInput.value = ""; return;
+                    
+                    addMessage(`🔮 **Vínculo establecido.** El modo **${modoRol}** está activo. ¿Qué deseas manifestar?`);
+                    commandInput.value = ""; 
+                    return;
                 }
                 
                 addMessage(val, "user");
@@ -112,7 +117,8 @@
             sendBtn.onclick = (e) => { e.preventDefault(); procesar(); };
             commandInput.onkeypress = (e) => { if (e.key === "Enter") { e.preventDefault(); procesar(); } };
 
-            addMessage("📖 **GRIMORIO RESTAURADO (GROQ)**\n\nBienvenido, Zixtermoon. Elige tu sendero:\n1. ⚔️ Batalla\n2. 🌀 Libre\n3. 🔞 +18");
+            // Mensaje de inicio claro
+            addMessage("📖 **GRIMORIO DESPIERTO**\n\nBienvenido, Zixtermoon. Elige tu sendero:\n1. ⚔️ Batalla\n2. 🌀 Libre\n3. 🔞 +18");
         });
     </script>
 </body>
