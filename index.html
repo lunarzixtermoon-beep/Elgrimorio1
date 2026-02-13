@@ -5,29 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimorio de las Mil Almas</title>
     <style>
-        body { background: #1a1a1a; color: #d4af37; font-family: 'serif'; display: flex; justify-content: center; padding: 20px; margin: 0; }
-        .container { width: 100%; max-width: 700px; background: #2a2a2a; border: 2px solid #8b4513; border-radius: 10px; padding: 20px; box-shadow: 0 0 20px #000; display: flex; flex-direction: column; }
-        #chat { height: 500px; overflow-y: auto; border: 1px solid #444; margin-bottom: 15px; padding: 15px; display: flex; flex-direction: column; background: #111; border-radius: 5px; }
-        .message { margin: 10px 0; padding: 12px; border-radius: 8px; line-height: 1.5; word-wrap: break-word; }
-        .ai { background: #1e1e1e; border-left: 5px solid #d4af37; align-self: flex-start; color: #e0e0e0; max-width: 85%; }
-        .user { background: #2c3e50; align-self: flex-end; color: #87ceeb; border-right: 5px solid #87ceeb; max-width: 85%; }
-        
-        /* Colores épicos para el saludo */
-        .saludo-oro { color: #ffd700; font-weight: bold; text-shadow: 0 0 5px #ff4500; font-size: 1.2em; }
-        .saludo-fuego { color: #ff4500; font-style: italic; }
-
-        .input-area { display: flex; gap: 10px; }
-        input { flex: 1; background: #000; border: 1px solid #d4af37; color: #fff; padding: 12px; border-radius: 5px; outline: none; }
-        button { background: #8b4513; color: #fff; border: none; padding: 10px 25px; cursor: pointer; font-weight: bold; border-radius: 5px; }
-        button:hover { background: #d4af37; color: #000; }
+        body { background: #0a0a0a; color: #d4af37; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .container { width: 100%; max-width: 850px; background: #151515; border: 2px solid #8b4513; border-radius: 8px; padding: 20px; box-shadow: 0 0 40px #000; }
+        .header-box { text-align: center; color: #ffd700; margin-bottom: 10px; white-space: pre; font-weight: bold; line-height: 1.2; }
+        #chat { height: 450px; overflow-y: auto; border: 1px solid #333; margin-bottom: 15px; padding: 15px; background: #000; color: #ccc; border-radius: 4px; font-size: 14px; }
+        .message { margin: 8px 0; border-bottom: 1px solid rgba(212,175,55,0.1); padding-bottom: 5px; }
+        .ai { color: #d4af37; }
+        .user { color: #87ceeb; }
+        .input-area { display: flex; gap: 10px; background: #111; padding: 10px; border-radius: 4px; border: 1px solid #444; }
+        input { flex: 1; background: #050505; border: 1px solid #8b4513; color: #ffd700; padding: 12px; outline: none; font-size: 15px; }
+        button { background: #5a0000; color: #fff; border: 1px solid #d4af37; padding: 10px 20px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="header-box">
+╔══════════════════════════════════╗
+   📖 EL GRIMORIO DE LAS MIL ALMAS 📖
+╚══════════════════════════════════╝</div>
         <div id="chat"></div>
         <div class="input-area">
-            <input type="text" id="command" placeholder="Invoca tu voluntad..." autofocus>
-            <button id="sendBtn">Invocar</button>
+            <input type="text" id="command" placeholder="Escribe tu acción o comando..." autofocus>
+            <button id="sendBtn">EJECUTAR</button>
         </div>
     </div>
 
@@ -38,79 +37,108 @@
             const sendBtn = document.getElementById('sendBtn');
 
             let api_key = ""; 
-            let modoRol = ""; 
-            const modeloElegido = "llama-3.3-70b-versatile"; 
+            let config = {
+                destino: "",
+                miNombre: "Aventurero",
+                miAvatar: "Personaje estándar",
+                nombreBot: "El Grimorio",
+                personajeBot: "Guía Místico"
+            };
 
             function addMessage(text, type = "ai") {
                 const div = document.createElement('div');
                 div.className = `message ${type}`;
-                let nombre = (type === "user") ? `👤 Aventurero` : `📖 El Grimorio`;
-                div.innerHTML = `<strong>${nombre}:</strong><br>${text.replace(/\n/g, '<br>')}`;
+                let nombre = (type === "user") ? `[${config.miNombre}]` : `[${config.nombreBot}]`;
+                div.innerHTML = `<strong>${nombre}:</strong> ${text.replace(/\n/g, '<br>')}`;
                 chat.appendChild(div);
                 chat.scrollTop = chat.scrollHeight;
             }
 
-            async function llamarIA(mensajeUsuario) {
+            async function llamarIA(mensajeUsuario, instruccionExtra = "") {
                 if (!api_key) {
                     let pass = prompt("🔑 PEGA TU LLAVE DE GROQ (gsk_...):");
-                    if (!pass) return "❌ El ritual requiere tu llave secreta.";
+                    if (!pass) return "❌ Sin llave no hay magia.";
                     api_key = pass.trim();
                 }
 
                 const url = "https://api.groq.com/openai/v1/chat/completions";
-                let contexto = "Eres el Grimorio de las Mil Almas, un tomo místico. Responde siempre en español.";
-                if (modoRol === "18") {
-                    contexto += " Actúa como autor de romance gótico/erótico visceral y detallado.";
-                }
+                
+                // SISTEMA DE COHERENCIA REFORZADA
+                let contexto = `ESTRICTAMENTE: No te salgas de tu papel. 
+                TRAMA ACTUAL:
+                - Eres: ${config.nombreBot}, actuando como el personaje: "${config.personajeBot}".
+                - El usuario es: ${config.miNombre}, actuando como el personaje: "${config.miAvatar}".
+                - Modo de Rol: ${config.destino}.
+                - REGLA: Todas tus respuestas deben ser coherentes con estos personajes y con la trama que se está desarrollando. 
+                ${instruccionExtra}`;
 
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
                         headers: { "Authorization": `Bearer ${api_key}`, "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            model: modeloElegido,
+                            model: "llama-3.3-70b-versatile",
                             messages: [{ role: "system", content: contexto }, { role: "user", content: mensajeUsuario }],
                             temperature: 0.8
                         })
                     });
                     const data = await response.json();
                     return data.choices[0].message.content;
-                } catch (e) { return "❌ Error en el plano astral."; }
+                } catch (e) { return "❌ Error de conexión mística."; }
+            }
+
+            function mostrarMenu() {
+                addMessage(`✨ **PASO 1: ELIGE TU DESTINO**\nA) Rol Libre 🗡️ | B) Batallas ⚔️ | C) Sexrol 🔥\n\n✨ **PASO 2: INVOCACIÓN**\nDime: "Transformate en [personaje]"\n\n📜 **COMANDOS**\n• mi nombre: [nombre]\n• mi avatar: [personaje]\n• nombre bot: [nombre]\n• crear trama con [X] y [Y]\n\n♻️ **retroceder**`);
             }
 
             async function procesar() {
-                const val = commandInput.value.trim();
+                let val = commandInput.value.trim();
                 if(!val) return;
 
-                if (val.toLowerCase() === "reiniciar") {
-                    modoRol = ""; chat.innerHTML = "";
-                    mostrarSaludo();
+                if (val.toLowerCase() === "retroceder") {
+                    config.destino = ""; chat.innerHTML = ""; mostrarMenu();
                     commandInput.value = ""; return;
                 }
 
-                if (!modoRol) {
-                    if (val === "1") modoRol = "batalla";
-                    else if (val === "2") modoRol = "libre";
-                    else if (val === "3") modoRol = "18";
-                    else { addMessage("Elige 1, 2 o 3."); return; }
-                    addMessage(`🔮 **Vínculo establecido.** Modo **${modoRol}** activo.`);
+                // Configuración de Identidad
+                if (val.toLowerCase().includes("mi nombre:")) {
+                    config.miNombre = val.split(":")[1].trim();
+                    addMessage(`✅ Te reconoceré como ${config.miNombre}.`);
+                    commandInput.value = ""; return;
+                }
+                if (val.toLowerCase().includes("mi avatar:")) {
+                    config.miAvatar = val.split(":")[1].trim();
+                    addMessage(`✅ Tu identidad de rol es: ${config.miAvatar}.`);
+                    commandInput.value = ""; return;
+                }
+                if (val.toLowerCase().startsWith("transformate en")) {
+                    config.personajeBot = val.toLowerCase().replace("transformate en", "").trim();
+                    addMessage(`🔮 Me he convertido en: ${config.personajeBot}.`);
+                    commandInput.value = ""; return;
+                }
+
+                if (!config.destino) {
+                    if (val.toLowerCase() === "a") config.destino = "Rol Libre 🗡️";
+                    else if (val.toLowerCase() === "b") config.destino = "Batallas ⚔️";
+                    else if (val.toLowerCase() === "c") config.destino = "Sexrol 🔥";
+                    else { addMessage("Elige A, B o C."); return; }
+                    addMessage(`✨ Destino fijado: **${config.destino}**.`);
                     commandInput.value = ""; return;
                 }
                 
                 addMessage(val, "user");
                 commandInput.value = "";
-                const res = await llamarIA(val);
-                addMessage(res, "ai");
-            }
 
-            function mostrarSaludo() {
-                addMessage("<span class='saludo-oro'>¡SALUDOS, AVENTUREROS!</span><br><span class='saludo-fuego'>Habéis despertado al Tomo de las Mil Almas.</span><br><br>Elegid vuestro destino:<br>1. ⚔️ Batalla<br>2. 🌀 Libre<br>3. 🔞 +18");
+                let instruccionExtra = (val.toLowerCase().includes("trama")) ? "Inicia una trama nueva respetando los personajes configurados." : "Sigue el hilo de la conversación sin romper la cuarta pared.";
+                
+                const res = await llamarIA(val, instruccionExtra);
+                addMessage(res, "ai");
             }
 
             sendBtn.onclick = (e) => { e.preventDefault(); procesar(); };
             commandInput.onkeypress = (e) => { if (e.key === "Enter") { e.preventDefault(); procesar(); } };
 
-            mostrarSaludo();
+            mostrarMenu();
         });
     </script>
 </body>
