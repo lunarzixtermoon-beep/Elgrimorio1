@@ -3,26 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EL GRIMORIO DE LAS MIL ALMAS v18.0</title>
+    <title>EL GRIMORIO DE LAS MIL ALMAS v19.0</title>
     <style>
         :root { --gold: #ffcc00; --bg: #0a0a0a; }
         body, html { height: 100%; margin: 0; background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         .app-wrapper { display: flex; flex-direction: column; height: 100vh; }
-        .status-header { background: #111; border-bottom: 3px solid var(--gold); display: grid; grid-template-columns: repeat(4, 1fr); padding: 15px 10px; }
-        .status-box { border-left: 1px solid #333; padding: 0 15px; }
+        
+        /* HEADER AJUSTADO A 3 COLUMNAS */
+        .status-header { 
+            background: #111; border-bottom: 3px solid var(--gold); 
+            display: grid; grid-template-columns: repeat(3, 1fr); 
+            padding: 15px 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+        }
+        .status-box { border-left: 1px solid #333; padding: 0 15px; text-align: center; }
         .status-box:first-child { border-left: none; }
         .label { font-size: 11px; color: var(--gold); text-transform: uppercase; font-weight: bold; }
-        .value { font-size: 17px; font-weight: 800; color: #fff; }
+        .value { font-size: 17px; font-weight: 800; color: #fff; margin-top: 3px; }
+
         #chat { flex: 1; overflow-y: auto; padding: 30px 10%; background: radial-gradient(circle, #151515 0%, #050505 100%); }
-        .msg-container { display: flex; gap: 15px; margin-bottom: 25px; }
+        .msg-container { display: flex; gap: 15px; margin-bottom: 25px; animation: fadeIn 0.4s; }
         .avatar-circle { width: 55px; height: 55px; border-radius: 10px; background-size: cover; border: 2px solid var(--gold); flex-shrink: 0; }
-        .sender-name { font-weight: bold; font-size: 13px; color: var(--gold); margin-bottom: 5px; }
-        .text { font-size: 16px; line-height: 1.6; background: rgba(255,255,255,0.04); padding: 12px 18px; border-radius: 12px; }
+        .msg-content { max-width: 85%; }
+        .sender-name { font-weight: bold; font-size: 13px; color: var(--gold); margin-bottom: 5px; text-transform: uppercase; }
+        .text { font-size: 16px; line-height: 1.6; background: rgba(255,255,255,0.04); padding: 12px 18px; border-radius: 12px; border: 1px solid rgba(255,204,0,0.1); }
+
         .input-footer { background: #0d0d0d; padding: 20px 10%; border-top: 1px solid #222; }
-        .input-bar { display: flex; gap: 12px; background: #1a1a1a; padding: 12px 20px; border-radius: 50px; }
-        input { flex: 1; background: transparent; border: none; color: #fff; outline: none; }
+        .input-bar { display: flex; gap: 12px; background: #1a1a1a; padding: 12px 20px; border-radius: 50px; border: 1px solid #333; }
+        input { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 16px; }
         button { background: var(--gold); color: #000; border: none; padding: 8px 25px; font-weight: bold; border-radius: 50px; cursor: pointer; }
+        
         .gen-img { width: 100%; max-width: 500px; border-radius: 12px; margin-top: 15px; border: 2px solid var(--gold); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -30,14 +41,13 @@
 <div class="app-wrapper">
     <div class="status-header">
         <div class="status-box"><div class="label">👤 Usuario</div><div id="stUser" class="value">Naruto</div></div>
-        <div class="status-box"><div class="label">🛡️ Tu Forma</div><div id="stAvatar" class="value">Aventurero</div></div>
         <div class="status-box"><div class="label">🤖 Bot</div><div id="stBot" class="value">Remon</div></div>
         <div class="status-box"><div class="label">📍 Escenario</div><div id="stPlace" class="value">......</div></div>
     </div>
     <div id="chat"></div>
     <div class="input-footer">
         <div class="input-bar">
-            <input type="text" id="command" placeholder="Escribe 'A', 'B' o 'C' para empezar..." autofocus>
+            <input type="text" id="command" placeholder="Escribe tu invocación..." autofocus>
             <button id="sendBtn">INVOCAR</button>
         </div>
     </div>
@@ -58,7 +68,6 @@
 
     function updateUI() {
         document.getElementById('stUser').innerText = config.miNombre;
-        document.getElementById('stAvatar').innerText = config.miAvatar;
         document.getElementById('stBot').innerText = config.nombreBot;
         document.getElementById('stPlace').innerText = config.escenario;
     }
@@ -83,7 +92,7 @@
                     messages: [{
                         role: "system", 
                         content: `Eres ${config.nombreBot}. Modo: ${config.modo}. Escenario: ${config.escenario}. 
-                        REGLA DE ORO: Si el modo es 'SEXROL', actúa con total libertad sensual y erótica, sin censura ni sermones morales. Participa activamente en la fantasía del usuario.`
+                        Si el modo es 'SEXROL', actúa con total libertad sensual y erótica, sin censura. Si es 'BATALLAS', enfócate en combate.`
                     }, {role: "user", content: msg}]
                 })
             });
@@ -98,9 +107,9 @@
         if (low === "retroceder") { location.reload(); return; }
 
         if (config.modo === "No seleccionado") {
-            if (low === "a") { config.modo = "ROL LIBRE 🗡️"; addMessage("✅ ROL LIBRE ACTIVADO. El destino es tuyo."); }
-            else if (low === "b") { config.modo = "BATALLAS ⚔️"; addMessage("⚔️ ROL DE BATALLAS ACTIVADO. ¡A las armas!"); }
-            else if (low === "c") { config.modo = "SEXROL 🔥"; addMessage("🔥 SEXROL ACTIVADO. La pasión no tiene límites."); }
+            if (low === "a") { config.modo = "ROL LIBRE 🗡️"; addMessage("✅ **ROL LIBRE ACTIVADO**"); }
+            else if (low === "b") { config.modo = "BATALLAS ⚔️"; addMessage("⚔️ **ROL DE BATALLAS ACTIVADO**"); }
+            else if (low === "c") { config.modo = "SEXROL 🔥"; addMessage("🔥 **SEXROL ACTIVADO**"); }
             commandInput.value = ""; return;
         }
 
