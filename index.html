@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimorio de las Mil Almas</title>
+    <title>Grimorio de las Mil Almas - Edición Groq</title>
     <style>
         body { background: #1a1a1a; color: #d4af37; font-family: 'serif'; display: flex; justify-content: center; padding: 20px; margin: 0; }
         .container { width: 100%; max-width: 700px; background: #2a2a2a; border: 2px solid #8b4513; border-radius: 10px; padding: 20px; box-shadow: 0 0 20px #000; display: flex; flex-direction: column; }
@@ -21,7 +21,7 @@
     <div class="container">
         <div id="chat"></div>
         <div class="input-area">
-            <input type="text" id="command" placeholder="Escribe tu voluntad..." autofocus>
+            <input type="text" id="command" placeholder="Invoca tu voluntad..." autofocus>
             <button id="sendBtn">Invocar</button>
         </div>
     </div>
@@ -34,6 +34,7 @@
 
             let api_key = ""; 
             let modoRol = ""; 
+            const modeloElegido = "llama-3.3-70b-versatile"; 
 
             function addMessage(text, type = "ai") {
                 const div = document.createElement('div');
@@ -46,35 +47,40 @@
 
             async function llamarIA(mensajeUsuario) {
                 if (!api_key) {
-                    let pass = prompt("🔑 PEGA TU LLAVE AIza...:");
-                    if (!pass) return "❌ Se requiere la llave.";
+                    let pass = prompt("🔑 PEGA TU LLAVE DE GROQ (gsk_...):");
+                    if (!pass) return "❌ El ritual requiere tu llave secreta.";
                     api_key = pass.trim();
                 }
 
-                // Usamos v1beta y el modelo específico que Google recomienda ahora
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api_key}`;
+                const url = "https://api.groq.com/openai/v1/chat/completions";
                 
-                let contexto = "Eres el Grimorio, un artefacto mágico oscuro. Hablas en español. ";
+                let contexto = "Eres el Grimorio de las Mil Almas, un tomo místico y oscuro. Responde siempre en español. ";
                 if (modoRol === "18") {
-                    contexto += "Actúa como narrador de romance oscuro adulto. Describe sensaciones físicas y pasión con detalle literario.";
+                    contexto += "MODO ADULTO: Actúa como un autor de romance gótico y carnal. Describe el deseo, el contacto físico y la tensión de forma detallada, visceral y poética. No te censures.";
                 }
-
-                const cuerpo = {
-                    contents: [{ parts: [{ text: contexto + "\n\n" + mensajeUsuario }] }]
-                };
 
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(cuerpo)
+                        headers: {
+                            "Authorization": `Bearer ${api_key}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            model: modeloElegido,
+                            messages: [
+                                { role: "system", content: contexto },
+                                { role: "user", content: mensajeUsuario }
+                            ],
+                            temperature: 0.9
+                        })
                     });
-                    const data = await response.json();
                     
-                    if (data.error) return "❌ Error: " + data.error.message;
-                    return data.candidates[0].content.parts[0].text;
+                    const data = await response.json();
+                    if (data.error) return "❌ Error de Groq: " + data.error.message;
+                    return data.choices[0].message.content;
                 } catch (e) {
-                    return "❌ Error de conexión.";
+                    return "❌ Error de conexión con el Inframundo.";
                 }
             }
 
@@ -93,7 +99,7 @@
                     else if (val === "2") modoRol = "libre";
                     else if (val === "3") modoRol = "18";
                     else { addMessage("Elige 1, 2 o 3."); return; }
-                    addMessage("🔮 Vínculo listo. ¿Qué manifestarás?");
+                    addMessage(`🔮 **Vínculo con Groq establecido.** ¿Qué deseas invocar en el modo ${modoRol}?`);
                     commandInput.value = ""; return;
                 }
                 
@@ -106,7 +112,7 @@
             sendBtn.onclick = (e) => { e.preventDefault(); procesar(); };
             commandInput.onkeypress = (e) => { if (e.key === "Enter") { e.preventDefault(); procesar(); } };
 
-            addMessage("📖 **GRIMORIO DESPIERTO**\n\nElige tu sendero:\n1. ⚔️ Batalla\n2. 🌀 Libre\n3. 🔞 +18");
+            addMessage("📖 **GRIMORIO RESTAURADO (GROQ)**\n\nBienvenido, Zixtermoon. Elige tu sendero:\n1. ⚔️ Batalla\n2. 🌀 Libre\n3. 🔞 +18");
         });
     </script>
 </body>
