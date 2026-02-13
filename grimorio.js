@@ -16,10 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
         chat.scrollTop = chat.scrollHeight;
     }
 
+    // --- EL PODER DE GROQ (LA LLAVE GSK) ---
     async function llamarIA(mensajeUsuario) {
         if (!api_key) {
-            let pass = prompt("🔑 PEGA TU LLAVE GRATUITA DE GROQ (gsk_...):");
-            if (!pass) return "❌ Sin la llave gsk, la magia no fluye.";
+            let pass = prompt("🔑 PEGA TU LLAVE MÍSTICA (gsk_...):");
+            if (!pass) return "❌ El libro permanece cerrado sin su llave gsk.";
             api_key = pass.trim();
         }
 
@@ -31,35 +32,41 @@ document.addEventListener("DOMContentLoaded", () => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile", // El modelo más potente y gratuito de Groq
+                    model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: `Eres ${personajeBot}. Responde en español de forma mística y épica. El usuario es el hechicero ${userName}.` },
+                        { 
+                            role: "system", 
+                            content: `Eres ${personajeBot}. Responde en español de forma mística, épica y sabia. El usuario es el hechicero ${userName}.` 
+                        },
                         { role: "user", content: mensajeUsuario }
                     ]
                 })
             });
 
             const data = await response.json();
+            
             if (data.error) {
-                api_key = ""; // Reset si la llave falla
-                return "❌ Error de Groq: " + data.error.message;
+                api_key = ""; // Si falla, que pida la llave de nuevo
+                return "❌ Error de Poder: " + data.error.message;
             }
+
             return data.choices[0].message.content;
             
         } catch (error) {
-            return "❌ Fallo en la invocación. Revisa la llave gsk.";
+            return "❌ La conexión con el vacío ha fallado. Revisa tu llave gsk.";
         }
     }
 
     async function procesar() {
         const val = commandInput.value.trim();
         if(!val) return;
+        
         addMessage(val, "user");
         commandInput.value = "";
 
         const cargando = document.createElement('div');
         cargando.className = 'message ai';
-        cargando.innerHTML = "<em>⚡ Invocando fuerza mística gratuita...</em>";
+        cargando.innerHTML = "<em>⚡ Invocando la Fuerza Mística de Groq...</em>";
         chat.appendChild(cargando);
 
         const respuestaIA = await llamarIA(val);
@@ -70,5 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
-    addMessage("📖 **GRIMORIO ESTABLE ACTIVADO**\nUsa tu llave `gsk_` para empezar sin pagar un solo centavo.");
+    // MENSAJE DE BIENVENIDA CORREGIDO
+    addMessage("📖 **EL GRIMORIO DE GROQ HA DESPERTADO**\n\nHechicero **Zixtermoon**, escribe un mensaje y usa tu llave `gsk_` para liberar la Fuerza Mística.");
 });
