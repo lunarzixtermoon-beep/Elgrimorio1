@@ -7,14 +7,27 @@
     <style>
         body { background: #0a0a0a; color: #d4af37; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; padding: 20px; margin: 0; }
         .container { width: 100%; max-width: 850px; background: #151515; border: 2px solid #8b4513; border-radius: 8px; padding: 20px; box-shadow: 0 0 40px #000; }
+        
+        /* Panel de Estado */
+        .status-panel { 
+            display: flex; justify-content: space-around; background: #000; border: 1px solid #444; 
+            padding: 8px; margin-bottom: 10px; font-size: 12px; color: #ffd700; border-radius: 4px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .status-item span { color: #fff; }
+
         .header-box { text-align: center; color: #ffd700; margin-bottom: 10px; white-space: pre; font-weight: bold; line-height: 1.2; }
-        #chat { height: 450px; overflow-y: auto; border: 1px solid #333; margin-bottom: 15px; padding: 15px; background: #000; color: #ccc; border-radius: 4px; font-size: 14px; }
-        .message { margin: 8px 0; border-bottom: 1px solid rgba(212,175,55,0.1); padding-bottom: 5px; }
+        #chat { height: 450px; overflow-y: auto; border: 1px solid #333; margin-bottom: 15px; padding: 15px; background: #000; color: #ccc; border-radius: 4px; font-size: 14px; scroll-behavior: smooth; }
+        .message { margin: 8px 0; border-bottom: 1px solid rgba(212,175,55,0.1); padding-bottom: 5px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
         .ai { color: #d4af37; }
         .user { color: #87ceeb; }
+        
         .input-area { display: flex; gap: 10px; background: #111; padding: 10px; border-radius: 4px; border: 1px solid #444; }
         input { flex: 1; background: #050505; border: 1px solid #8b4513; color: #ffd700; padding: 12px; outline: none; font-size: 15px; }
         button { background: #5a0000; color: #fff; border: 1px solid #d4af37; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #8b0000; }
     </style>
 </head>
 <body>
@@ -23,9 +36,16 @@
 ╔══════════════════════════════════╗
    📖 EL GRIMORIO DE LAS MIL ALMAS 📖
 ╚══════════════════════════════════╝</div>
+        
+        <div class="status-panel">
+            <div class="status-item">👤 YO: <span id="stUser">Aventurero</span></div>
+            <div class="status-item">🤖 BOT: <span id="stBot">Grimorio</span></div>
+            <div class="status-item">🎭 MODO: <span id="stMode">Ninguno</span></div>
+        </div>
+
         <div id="chat"></div>
         <div class="input-area">
-            <input type="text" id="command" placeholder="Escribe tu acción o comando..." autofocus>
+            <input type="text" id="command" placeholder="Invoca un comando o narra tu acción..." autofocus>
             <button id="sendBtn">EJECUTAR</button>
         </div>
     </div>
@@ -35,6 +55,9 @@
             const chat = document.getElementById('chat');
             const commandInput = document.getElementById('command');
             const sendBtn = document.getElementById('sendBtn');
+            const stUser = document.getElementById('stUser');
+            const stBot = document.getElementById('stBot');
+            const stMode = document.getElementById('stMode');
 
             let api_key = ""; 
             let config = {
@@ -45,6 +68,12 @@
                 personajeBot: "Guía Místico"
             };
 
+            function updateStatus() {
+                stUser.innerText = `${config.miNombre} (${config.miAvatar.substring(0,15)}...)`;
+                stBot.innerText = `${config.nombreBot}`;
+                stMode.innerText = config.destino || "Seleccionando...";
+            }
+
             function addMessage(text, type = "ai") {
                 const div = document.createElement('div');
                 div.className = `message ${type}`;
@@ -54,23 +83,17 @@
                 chat.scrollTop = chat.scrollHeight;
             }
 
-            async function llamarIA(mensajeUsuario, instruccionExtra = "") {
+            async function llamarIA(mensajeUsuario, extra = "") {
                 if (!api_key) {
-                    let pass = prompt("🔑 PEGA TU LLAVE DE GROQ (gsk_...):");
-                    if (!pass) return "❌ Sin llave no hay magia.";
-                    api_key = pass.trim();
+                    api_key = prompt("🔑 PEGA TU LLAVE DE GROQ (gsk_...):")?.trim();
+                    if (!api_key) return "❌ Sin llave no hay magia.";
                 }
 
                 const url = "https://api.groq.com/openai/v1/chat/completions";
-                
-                // SISTEMA DE COHERENCIA REFORZADA
-                let contexto = `ESTRICTAMENTE: No te salgas de tu papel. 
-                TRAMA ACTUAL:
-                - Eres: ${config.nombreBot}, actuando como el personaje: "${config.personajeBot}".
-                - El usuario es: ${config.miNombre}, actuando como el personaje: "${config.miAvatar}".
-                - Modo de Rol: ${config.destino}.
-                - REGLA: Todas tus respuestas deben ser coherentes con estos personajes y con la trama que se está desarrollando. 
-                ${instruccionExtra}`;
+                let contexto = `ESTRICTAMENTE: No rompas el rol. 
+                TÚ ERES: ${config.nombreBot}, actuando como: ${config.personajeBot}.
+                EL USUARIO ES: ${config.miNombre}, actuando como: ${config.miAvatar}.
+                MODO: ${config.destino}. ${extra}`;
 
                 try {
                     const response = await fetch(url, {
@@ -79,16 +102,16 @@
                         body: JSON.stringify({
                             model: "llama-3.3-70b-versatile",
                             messages: [{ role: "system", content: contexto }, { role: "user", content: mensajeUsuario }],
-                            temperature: 0.8
+                            temperature: 0.9
                         })
                     });
                     const data = await response.json();
                     return data.choices[0].message.content;
-                } catch (e) { return "❌ Error de conexión mística."; }
+                } catch (e) { return "❌ Las sombras han bloqueado la señal."; }
             }
 
             function mostrarMenu() {
-                addMessage(`✨ **PASO 1: ELIGE TU DESTINO**\nA) Rol Libre 🗡️ | B) Batallas ⚔️ | C) Sexrol 🔥\n\n✨ **PASO 2: INVOCACIÓN**\nDime: "Transformate en [personaje]"\n\n📜 **COMANDOS**\n• mi nombre: [nombre]\n• mi avatar: [personaje]\n• nombre bot: [nombre]\n• crear trama con [X] y [Y]\n\n♻️ **retroceder**`);
+                addMessage(`✨ **PASO 1: ELIGE TU DESTINO**\nA) Rol Libre | B) Batallas | C) Sexrol 🔥\n\n📜 **COMANDOS**\n• mi nombre: [nombre] | • mi avatar: [avatar]\n• nombre bot: [nombre] | • transformate en [ser]\n• crear trama con [X] y [Y]\n\n♻️ **retroceder** para reiniciar.`);
             }
 
             async function procesar() {
@@ -97,23 +120,31 @@
 
                 if (val.toLowerCase() === "retroceder") {
                     config.destino = ""; chat.innerHTML = ""; mostrarMenu();
-                    commandInput.value = ""; return;
+                    updateStatus(); commandInput.value = ""; return;
                 }
 
-                // Configuración de Identidad
-                if (val.toLowerCase().includes("mi nombre:")) {
-                    config.miNombre = val.split(":")[1].trim();
-                    addMessage(`✅ Te reconoceré como ${config.miNombre}.`);
+                // COMANDOS TÉCNICOS PRIORITARIOS
+                if (val.toLowerCase().startsWith("nombre bot:")) {
+                    config.nombreBot = val.split(":")[1].trim();
+                    updateStatus();
+                    addMessage(`<i>✨ Sistema: El bot ahora se identifica como ${config.nombreBot}</i>`, "ai");
                     commandInput.value = ""; return;
                 }
-                if (val.toLowerCase().includes("mi avatar:")) {
+                if (val.toLowerCase().startsWith("mi nombre:")) {
+                    config.miNombre = val.split(":")[1].trim();
+                    updateStatus();
+                    addMessage(`<i>✨ Sistema: Te reconoceré como ${config.miNombre}</i>`, "ai");
+                    commandInput.value = ""; return;
+                }
+                if (val.toLowerCase().startsWith("mi avatar:")) {
                     config.miAvatar = val.split(":")[1].trim();
-                    addMessage(`✅ Tu identidad de rol es: ${config.miAvatar}.`);
+                    updateStatus();
+                    addMessage(`<i>✨ Sistema: Tu avatar es ahora ${config.miAvatar}</i>`, "ai");
                     commandInput.value = ""; return;
                 }
                 if (val.toLowerCase().startsWith("transformate en")) {
                     config.personajeBot = val.toLowerCase().replace("transformate en", "").trim();
-                    addMessage(`🔮 Me he convertido en: ${config.personajeBot}.`);
+                    addMessage(`<i>🔮 Sistema: El bot ha tomado la forma de ${config.personajeBot}</i>`, "ai");
                     commandInput.value = ""; return;
                 }
 
@@ -121,23 +152,23 @@
                     if (val.toLowerCase() === "a") config.destino = "Rol Libre 🗡️";
                     else if (val.toLowerCase() === "b") config.destino = "Batallas ⚔️";
                     else if (val.toLowerCase() === "c") config.destino = "Sexrol 🔥";
-                    else { addMessage("Elige A, B o C."); return; }
+                    else { addMessage("Selecciona A, B o C."); return; }
+                    updateStatus();
                     addMessage(`✨ Destino fijado: **${config.destino}**.`);
                     commandInput.value = ""; return;
                 }
                 
                 addMessage(val, "user");
                 commandInput.value = "";
-
-                let instruccionExtra = (val.toLowerCase().includes("trama")) ? "Inicia una trama nueva respetando los personajes configurados." : "Sigue el hilo de la conversación sin romper la cuarta pared.";
-                
-                const res = await llamarIA(val, instruccionExtra);
+                let instruccion = (val.toLowerCase().includes("trama")) ? "Crea una trama épica." : "Sigue el rol.";
+                const res = await llamarIA(val, instruccion);
                 addMessage(res, "ai");
             }
 
             sendBtn.onclick = (e) => { e.preventDefault(); procesar(); };
             commandInput.onkeypress = (e) => { if (e.key === "Enter") { e.preventDefault(); procesar(); } };
 
+            updateStatus();
             mostrarMenu();
         });
     </script>
