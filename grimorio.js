@@ -16,25 +16,24 @@ document.addEventListener("DOMContentLoaded", () => {
         chat.scrollTop = chat.scrollHeight;
     }
 
-    // --- CONEXIÓN A LA FUERZA MÍSTICA (GROQ) ---
     async function llamarIA(mensajeUsuario) {
         if (!api_key) {
-            // AQUÍ ACTUALICÉ EL MENSAJE PARA QUE PIDA LA GSK
-            api_key = prompt("🔑 Pega tu LLAVE DE GROQ (la que empieza por gsk_):");
-            if (!api_key) return "❌ Sin la llave gsk, el libro no tiene energía.";
+            let pass = prompt("🔑 PEGA TU LLAVE (gsk_...):");
+            if (!pass) return "❌ El libro se cierra. Necesito la llave.";
+            api_key = pass.trim(); // Esto borra espacios accidentales
         }
 
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${api_key}`,
-                    'Content-Type': 'application/json'
+                    "Authorization": `Bearer ${api_key}`, // IMPORTANTE: Espacio después de Bearer
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: `Eres ${personajeBot}. Responde en español. Eres un grimorio místico y sabio. El usuario se llama ${userName}.` },
+                        { role: "system", content: `Eres ${personajeBot}. Responde en español de forma mística. El usuario es ${userName}.` },
                         { role: "user", content: mensajeUsuario }
                     ]
                 })
@@ -43,13 +42,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             
             if (data.error) {
+                // Si la llave sigue fallando, borramos la guardada para pedirla de nuevo
+                api_key = ""; 
                 return "❌ Error de la llave: " + data.error.message;
             }
 
             return data.choices[0].message.content;
             
         } catch (error) {
-            return "❌ El ritual ha fallado. Verifica tu conexión.";
+            return "❌ Fallo en la conexión astral.";
         }
     }
 
@@ -59,23 +60,18 @@ document.addEventListener("DOMContentLoaded", () => {
         addMessage(val, "user");
         commandInput.value = "";
 
-        if (val.toLowerCase().startsWith("transformate en")) {
-            personajeBot = val.split(/transformate en/i)[1].trim();
-            addMessage(`✨ *La tinta se reordena...* Ahora soy **${personajeBot}**.`, "ai");
-        } else {
-            const cargando = document.createElement('div');
-            cargando.className = 'message ai';
-            cargando.innerHTML = "<em>⚡ La Fuerza Mística está pensando...</em>";
-            chat.appendChild(cargando);
+        const cargando = document.createElement('div');
+        cargando.className = 'message ai';
+        cargando.innerHTML = "<em>⚡ La Fuerza Mística está pensando...</em>";
+        chat.appendChild(cargando);
 
-            const respuestaIA = await llamarIA(val);
-            chat.lastChild.remove(); 
-            addMessage(respuestaIA, "ai", personajeBot);
-        }
+        const respuestaIA = await llamarIA(val);
+        chat.lastChild.remove(); 
+        addMessage(respuestaIA, "ai", personajeBot);
     }
 
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
-    addMessage("📖 **GRIMORIO DE GROQ ACTIVADO**\n\nEscribe cualquier cosa para que te pida la llave `gsk_` correctamente.");
+    addMessage("📖 **INTENTO FINAL DE CONEXIÓN**\nEscribe algo y pega tu llave `gsk_` con cuidado.");
 });
