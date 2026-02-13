@@ -1,81 +1,53 @@
-const chat = document.getElementById('chat');
-const commandInput = document.getElementById('command');
+document.addEventListener("DOMContentLoaded", () => {
+    const chat = document.getElementById('chat');
+    const commandInput = document.getElementById('command');
+    const sendBtn = document.getElementById('sendBtn');
 
-let userName = "Sorcerer";
-let modoActual = null;
-let personajesActivos = [];
+    let userName = "Sorcerer";
 
-// Escuchar la tecla Enter
-commandInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendCommand();
-});
-
-function addMessage(text, type="ai", img=null) {
-    const div = document.createElement('div');
-    div.className = `message ${type}`;
-    
-    let header = type === "ai" ? "📖 El Grimorio" : `👤 ${userName}`;
-    div.innerHTML = `<strong>${header}:</strong><br>${text}`;
-    
-    if(img) {
-        const image = document.createElement('img');
-        image.src = img;
-        div.appendChild(image);
+    function addMessage(text, type = "ai") {
+        const div = document.createElement('div');
+        div.className = `message ${type}`;
+        const sender = type === "ai" ? "📖 El Grimorio" : `👤 ${userName}`;
+        div.innerHTML = `<strong>${sender}:</strong><br>${text.replace(/\n/g, '<br>')}`;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
     }
-    
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-}
 
-function mostrarBienvenida() {
-    modoActual = null;
-    personajesActivos = [];
-    chat.innerHTML = ""; // Limpia la pantalla
-    addMessage(
-`✨ BIENVENIDO, SORCERER ✨
-El libro místico flota frente a ti...
-
-PASO 1: ELIGE TU DESTINO
-[A] Rol Libre 🗡️ | [B] Batallas ⚔️ | [C] Sexrol 🔥
-
-PASO 2: INVOCACIÓN
-- Transformate en [nombre]
-- Crear trama con [P1] y [P2]
-
-COMANDOS:
-- mi nombre [nuevo]
-- retroceder`
-    );
-}
-
-function sendCommand() {
-    const text = commandInput.value.trim();
-    if(!text) return;
-    
-    const b = text.toLowerCase();
-    addMessage(text, "user");
-
-    if(b === "a") { modoActual = "rol"; addMessage("✅ Modo Rol Libre 🗡️ activado."); }
-    else if(b === "b") { modoActual = "batalla"; addMessage("✅ Modo Batallas ⚔️ activado."); }
-    else if(b === "c") { modoActual = "sexrol"; addMessage("🔥 Modo Sexrol activado."); }
-    else if(b.startsWith("mi nombre")) {
-        userName = text.substring(9).trim() || "Sorcerer";
-        addMessage(`Tu nombre es ahora: ${userName}`);
-    }
-    else if(b === "retroceder") { mostrarBienvenida(); }
-    else if(b.startsWith("transformate en")) {
-        const nombre = text.substring(15).trim();
-        const nombreCap = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+    function procesar() {
+        const val = commandInput.value.trim();
+        if(!val) return;
+        const b = val.toLowerCase();
         
-        // Simulación de imagen (puedes poner una API real aquí luego)
-        addMessage(`✨ Transmutando... imbuyendo la esencia de ${nombreCap}.`);
-        addMessage(`*${nombreCap} emerge de las páginas.*`, "ai");
-    } 
-    else {
-        addMessage("El Grimorio no reconoce ese hechizo...", "ai");
+        addMessage(val, "user");
+
+        if(b === "a") {
+            addMessage("✨ **Modo Rol Libre activado.** Las páginas se extienden infinitamente.");
+        } else if(b === "b") {
+            addMessage("⚔️ **Modo Batallas activado.** Sangre y acero cubren las letras.");
+        } else if(b === "c") {
+            addMessage("🔥 **Modo Sexrol activado.** Un calor místico emana del libro.");
+        } else if(b.startsWith("transformate en")) {
+            const n = val.split("en")[1]?.trim() || "un ente";
+            addMessage(`*El Grimorio brilla con fuerza...*`);
+            addMessage(`✨ Se ha imbuido la esencia de **${n}**.`);
+        } else if(b === "retroceder") {
+            chat.innerHTML = "";
+            bienvenida();
+        } else {
+            addMessage("Hechizo no reconocido. El libro permanece en silencio.");
+        }
+
+        commandInput.value = "";
+        commandInput.focus();
     }
 
-    commandInput.value = "";
-}
+    sendBtn.onclick = procesar;
+    commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
-mostrarBienvenida();
+    function bienvenida() {
+        addMessage("📖 **EL GRIMORIO DE LAS MIL ALMAS VINCULADO**\n\nElige tu destino:\nA) Rol | B) Batallas | C) Sexrol\n\nO invoca con: *Transformate en [personaje]*");
+    }
+
+    bienvenida();
+});
