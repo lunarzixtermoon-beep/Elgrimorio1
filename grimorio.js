@@ -18,22 +18,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function llamarIA(mensajeUsuario) {
         if (!api_key) {
-            let pass = prompt("🔑 PEGA TU LLAVE (gsk_...):");
-            if (!pass) return "❌ El libro se cierra. Necesito la llave.";
-            api_key = pass.trim(); // Esto borra espacios accidentales
+            let pass = prompt("🔑 PEGA TU LLAVE GSK AQUÍ:");
+            if (!pass) return "❌ No hay llave, no hay magia.";
+            // Limpieza absoluta de espacios y caracteres invisibles
+            api_key = pass.trim().replace(/[\u200B-\u200D\uFEFF]/g, ""); 
         }
 
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: 'POST',
                 headers: {
-                    "Authorization": `Bearer ${api_key}`, // IMPORTANTE: Espacio después de Bearer
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${api_key}`
                 },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: `Eres ${personajeBot}. Responde en español de forma mística. El usuario es ${userName}.` },
+                        { role: "system", content: `Eres ${personajeBot}. Responde en español como un grimorio mágico. El usuario es ${userName}.` },
                         { role: "user", content: mensajeUsuario }
                     ]
                 })
@@ -42,9 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             
             if (data.error) {
-                // Si la llave sigue fallando, borramos la guardada para pedirla de nuevo
-                api_key = ""; 
-                return "❌ Error de la llave: " + data.error.message;
+                let errorMsg = data.error.message;
+                api_key = ""; // Resetear para poder intentar de nuevo
+                return `❌ Error de la llave: ${errorMsg}. (Asegúrate que empiece por gsk_)`;
             }
 
             return data.choices[0].message.content;
@@ -66,12 +67,14 @@ document.addEventListener("DOMContentLoaded", () => {
         chat.appendChild(cargando);
 
         const respuestaIA = await llamarIA(val);
-        chat.lastChild.remove(); 
+        if (chat.lastChild && chat.lastChild.innerHTML.includes("pensando")) {
+            chat.lastChild.remove(); 
+        }
         addMessage(respuestaIA, "ai", personajeBot);
     }
 
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
-    addMessage("📖 **INTENTO FINAL DE CONEXIÓN**\nEscribe algo y pega tu llave `gsk_` con cuidado.");
+    addMessage("📖 **SISTEMA REINICIADO**\nEscribe algo para probar tu nueva llave `gsk_`.");
 });
