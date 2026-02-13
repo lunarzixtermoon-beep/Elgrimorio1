@@ -18,13 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function llamarIA(mensajeUsuario) {
         if (!api_key) {
-            api_key = prompt("🔑 Introduce tu API KEY (AIza...):");
-            if (!api_key) return "❌ Sin llave no hay magia.";
+            api_key = prompt("🔑 Pega tu API KEY aquí (la que empieza por AIza...):");
+            if (!api_key) return "❌ Sin la llave no hay vida.";
         }
 
         try {
-            // USAMOS 'gemini-1.5-flash-latest' QUE ES EL NOMBRE MÁS COMPATIBLE EN 2026
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${api_key}`;
+            // Probamos con 'gemini-pro', que es el nombre más universal y aceptado
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${api_key}`;
             
             const response = await fetch(url, {
                 method: 'POST',
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({
                     contents: [{ 
                         parts: [{ 
-                            text: `Actúa como ${personajeBot}. Instrucciones: Responde siempre en español. El usuario se llama ${userName}. Mensaje: ${mensajeUsuario}` 
+                            text: `Eres ${personajeBot}. Responde en español de forma épica. El usuario es ${userName}. Mensaje: ${mensajeUsuario}` 
                         }] 
                     }]
                 })
@@ -41,35 +41,26 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (data.error) {
-                // Si falla el 'flash', el libro nos avisará detalladamente
-                return "❌ Error místico: " + data.error.message;
+                // Si 'gemini-pro' falla, el Grimorio nos dirá el motivo real
+                return "❌ El Grimorio dice: " + data.error.message;
             }
 
-            if (data.candidates && data.candidates[0].content) {
-                return data.candidates[0].content.parts[0].text;
-            } else {
-                return "❌ El libro brilla pero no salen palabras...";
-            }
+            return data.candidates[0].content.parts[0].text;
             
         } catch (error) {
-            return "❌ Fallo de conexión astral.";
+            return "❌ Error de conexión mística.";
         }
     }
 
     async function procesar() {
         const val = commandInput.value.trim();
         if(!val) return;
-        
         addMessage(val, "user");
         commandInput.value = "";
-        const b = val.toLowerCase();
 
-        if (b.startsWith("transformate en")) {
+        if (val.toLowerCase().startsWith("transformate en")) {
             personajeBot = val.split(/transformate en/i)[1].trim();
-            addMessage(`✨ *Las páginas brillan...* Ahora soy **${personajeBot}**.`, "ai");
-        } else if (b.includes("mi nombre:")) {
-            userName = val.split(":")[1].trim();
-            addMessage(`Reconocido. Saludos, Hechicero **${userName}**.`, "ai");
+            addMessage(`✨ *El libro cambia su forma...* Ahora soy **${personajeBot}**.`, "ai");
         } else {
             const cargando = document.createElement('div');
             cargando.className = 'message ai';
@@ -85,5 +76,5 @@ document.addEventListener("DOMContentLoaded", () => {
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
-    addMessage("📖 **GRIMORIO ACTUALIZADO (V2026)**\nEscribe cualquier cosa para despertar la IA.");
+    addMessage("📖 **GRIMORIO NIVEL PRO ACTIVADO**\nEscribe cualquier cosa para probar.");
 });
