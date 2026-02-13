@@ -16,55 +16,63 @@ document.addEventListener("DOMContentLoaded", () => {
         chat.scrollTop = chat.scrollHeight;
     }
 
+    // --- EL CORAZÓN DE GROQ (FUERZA MÍSTICA) ---
     async function llamarIA(mensajeUsuario) {
         if (!api_key) {
-            api_key = prompt("🔑 Pega tu API KEY aquí (la que empieza por AIza...):");
-            if (!api_key) return "❌ Sin la llave no hay vida.";
+            api_key = prompt("🔑 Pega tu nueva LLAVE MÍSTICA (gsk_...):");
+            if (!api_key) return "❌ El libro permanece cerrado sin su llave.";
         }
 
         try {
-            // Probamos con 'gemini-pro', que es el nombre más universal y aceptado
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${api_key}`;
-            
-            const response = await fetch(url, {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Authorization': `Bearer ${api_key}`,
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
-                    contents: [{ 
-                        parts: [{ 
-                            text: `Eres ${personajeBot}. Responde en español de forma épica. El usuario es ${userName}. Mensaje: ${mensajeUsuario}` 
-                        }] 
-                    }]
+                    model: "llama-3.3-70b-versatile",
+                    messages: [
+                        { 
+                            role: "system", 
+                            content: `Eres ${personajeBot}. Instrucciones: Responde siempre en español. Eres un grimorio místico, sabio y con un toque oscuro. El usuario es ${userName}.` 
+                        },
+                        { role: "user", content: mensajeUsuario }
+                    ],
+                    temperature: 0.8
                 })
             });
-            
+
             const data = await response.json();
-
-            if (data.error) {
-                // Si 'gemini-pro' falla, el Grimorio nos dirá el motivo real
-                return "❌ El Grimorio dice: " + data.error.message;
-            }
-
-            return data.candidates[0].content.parts[0].text;
+            if (data.error) return "❌ Error de conexión: " + data.error.message;
+            return data.choices[0].message.content;
             
         } catch (error) {
-            return "❌ Error de conexión mística.";
+            return "❌ El ritual de invocación ha fallado. Revisa tu llave.";
         }
     }
 
     async function procesar() {
         const val = commandInput.value.trim();
         if(!val) return;
+        
         addMessage(val, "user");
         commandInput.value = "";
+        const b = val.toLowerCase();
 
-        if (val.toLowerCase().startsWith("transformate en")) {
+        // COMANDOS RÁPIDOS
+        if (b.startsWith("transformate en")) {
             personajeBot = val.split(/transformate en/i)[1].trim();
-            addMessage(`✨ *El libro cambia su forma...* Ahora soy **${personajeBot}**.`, "ai");
-        } else {
+            addMessage(`✨ *Las páginas crujen...* Ahora soy **${personajeBot}**.`, "ai");
+        } else if (b.includes("mi nombre:")) {
+            userName = val.split(":")[1].trim();
+            addMessage(`Reconocido. Saludos, Hechicero **${userName}**.`, "ai");
+        } 
+        // RESPUESTA DE IA REAL
+        else {
             const cargando = document.createElement('div');
             cargando.className = 'message ai';
-            cargando.innerHTML = "<em>📖 El libro está escribiendo...</em>";
+            cargando.innerHTML = "<em>⚡ La Fuerza Mística está procesando...</em>";
             chat.appendChild(cargando);
 
             const respuestaIA = await llamarIA(val);
@@ -76,5 +84,5 @@ document.addEventListener("DOMContentLoaded", () => {
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
 
-    addMessage("📖 **GRIMORIO NIVEL PRO ACTIVADO**\nEscribe cualquier cosa para probar.");
+    addMessage("📖 **EL GRIMORIO HA DESPERTADO CON PODER DE GROQ**\n\nUsa `mi nombre: [nombre]` para presentarte.\nEscribe cualquier cosa para activar la IA.");
 });
