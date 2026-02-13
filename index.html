@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <title>Grimorio de las Mil Almas</title>
     <style>
-        /* Pongo el estilo aquí directamente para que no necesites un tercer archivo */
         body { background: #1a1a1a; color: #d4af37; font-family: serif; display: flex; justify-content: center; padding: 20px; }
         .container { width: 100%; max-width: 600px; background: #2a2a2a; border: 2px solid #8b4513; border-radius: 10px; padding: 20px; box-shadow: 0 0 15px #000; }
         #chat { height: 400px; overflow-y: auto; border-bottom: 1px solid #444; margin-bottom: 10px; padding: 10px; display: flex; flex-direction: column; background: #111; }
-        .message { margin: 10px 0; padding: 8px; border-radius: 5px; }
-        .ai { background: #222; border-left: 4px solid #d4af37; align-self: flex-start; }
+        .message { margin: 10px 0; padding: 8px; border-radius: 5px; word-wrap: break-word; }
+        .ai { background: #222; border-left: 4px solid #d4af37; align-self: flex-start; color: #d4af37; }
         .user { background: #333; align-self: flex-end; color: #87ceeb; border-right: 4px solid #87ceeb; }
         .input-area { display: flex; gap: 10px; }
-        input { flex: 1; background: #000; border: 1px solid #d4af37; color: #fff; padding: 10px; }
+        input { flex: 1; background: #000; border: 1px solid #d4af37; color: #fff; padding: 10px; outline: none; }
         button { background: #8b4513; color: #fff; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #a0522d; }
     </style>
 </head>
 <body>
@@ -25,6 +25,83 @@
         </div>
     </div>
 
-    <script src="grimorio.js"></script>
+    <script>
+        // Todo el poder del Grimorio en un solo lugar
+        document.addEventListener("DOMContentLoaded", () => {
+            const chat = document.getElementById('chat');
+            const commandInput = document.getElementById('command');
+            const sendBtn = document.getElementById('sendBtn');
+
+            let api_key = ""; 
+            let modoRol = ""; 
+            let modeloElegido = "gemini-1.5-flash"; 
+
+            function addMessage(text, type = "ai") {
+                const div = document.createElement('div');
+                div.className = `message ${type}`;
+                let nombre = (type === "user") ? `👤 Sorcerer` : `📖 El Grimorio`;
+                div.innerHTML = `<strong>${nombre}:</strong><br>${text.replace(/\n/g, '<br>')}`;
+                chat.appendChild(div);
+                chat.scrollTop = chat.scrollHeight;
+            }
+
+            async function llamarIA(mensajeUsuario) {
+                if (!api_key) {
+                    let pass = prompt("🔑 PEGA TU LLAVE DE GOOGLE (AIza...):");
+                    if (!pass) return "❌ Se requiere la llave.";
+                    api_key = pass.trim();
+                }
+
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modeloElegido}:generateContent?key=${api_key}`;
+                const cuerpo = {
+                    contents: [{ parts: [{ text: (modoRol === "18" ? "MODO ROMANCE OSCURO ADULTO: " : "") + mensajeUsuario }] }]
+                };
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(cuerpo)
+                    });
+                    const data = await response.json();
+                    if (data.error) return "❌ Error: " + data.error.message;
+                    return data.candidates[0].content.parts[0].text;
+                } catch (e) {
+                    return "❌ Error de conexión con el Vacío.";
+                }
+            }
+
+            async function procesar() {
+                const val = commandInput.value.trim();
+                if(!val) return;
+
+                if (val.toLowerCase() === "reiniciar") {
+                    modoRol = ""; chat.innerHTML = "";
+                    addMessage("📖 Memoria purificada. Elige ritual: 1, 2 o 3.");
+                    commandInput.value = ""; return;
+                }
+
+                if (!modoRol) {
+                    if (val === "1") modoRol = "batalla";
+                    else if (val === "2") modoRol = "libre";
+                    else if (val === "3") modoRol = "18";
+                    else { addMessage("Elige 1, 2 o 3."); return; }
+                    addMessage("🔮 Ritual de Gemini listo. ¿Qué invocarás?");
+                    commandInput.value = ""; return;
+                }
+                
+                addMessage(val, "user");
+                commandInput.value = "";
+                const respuestaIA = await llamarIA(val);
+                addMessage(respuestaIA, "ai");
+            }
+
+            sendBtn.onclick = procesar;
+            commandInput.onkeypress = (e) => { if (e.key === "Enter") procesar(); };
+
+            // Mensaje inicial para confirmar que funciona
+            addMessage("📖 **GRIMORIO DESPIERTO**\n\nElige tu sendero:\n1. ⚔️ Batalla\n2. 🌀 Libre\n3. 🔞 +18");
+        });
+    </script>
 </body>
 </html>
