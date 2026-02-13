@@ -23,7 +23,6 @@
             min-height: 100vh;
             margin: 0; 
             padding: 20px;
-            overflow-x: hidden;
         }
 
         .container { 
@@ -34,10 +33,8 @@
             border-radius: 15px; 
             padding: 30px; 
             box-shadow: 0 0 50px rgba(139, 69, 19, 0.5), inset 0 0 20px #000;
-            position: relative;
         }
 
-        /* Cabecera Épica */
         .header-box { 
             text-align: center; 
             color: var(--gold); 
@@ -45,16 +42,8 @@
             font-size: 18px;
             text-shadow: 0 0 10px var(--gold);
             letter-spacing: 2px;
-            animation: pulse 3s infinite;
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.8; }
-            50% { opacity: 1; text-shadow: 0 0 20px var(--gold); }
-            100% { opacity: 0.8; }
-        }
-
-        /* Panel de Estado Estilo RPG */
         .status-panel { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
@@ -76,52 +65,23 @@
 
         .status-item span { color: #fff; font-size: 15px; display: block; margin-top: 4px; font-weight: bold; }
 
-        /* Área de Chat */
         #chat { 
             height: 550px; 
             overflow-y: auto; 
             border: 1px solid #333; 
-            padding: 20px; 
-            background: url('https://www.transparenttextures.com/patterns/black-paper.png'), #050505;
+            padding: 25px; 
+            background: #050505;
             border-radius: 8px; 
             box-shadow: inset 0 0 30px #000;
-            scrollbar-width: thin;
-            scrollbar-color: var(--dark-gold) #000;
-        }
-
-        #chat::-webkit-scrollbar { width: 8px; }
-        #chat::-webkit-scrollbar-thumb { background: var(--dark-gold); border-radius: 10px; }
-
-        .message { 
-            margin: 15px 0; 
-            padding-bottom: 10px; 
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
             line-height: 1.6;
-            animation: slideIn 0.4s ease-out;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
+        .message { margin-bottom: 20px; border-bottom: 1px solid rgba(212, 175, 55, 0.1); padding-bottom: 10px; }
+        .user-tag { color: #4fc3f7; font-weight: bold; }
+        .bot-tag { color: var(--gold); font-weight: bold; }
+        
+        .gen-img { width: 100%; max-width: 600px; border: 3px solid var(--gold); margin: 20px auto; border-radius: 12px; display: block; box-shadow: 0 0 25px rgba(255, 204, 0, 0.4); }
 
-        .user-tag { color: #4fc3f7; font-weight: bold; text-shadow: 0 0 5px #4fc3f7; }
-        .bot-tag { color: var(--gold); font-weight: bold; text-shadow: 0 0 5px var(--gold); }
-
-        /* Imágenes de Invocación */
-        .gen-img { 
-            width: 100%; 
-            max-width: 600px; 
-            border: 3px solid var(--gold); 
-            margin: 20px auto; 
-            border-radius: 12px; 
-            display: block;
-            box-shadow: 0 0 25px rgba(255, 204, 0, 0.4);
-            transition: transform 0.3s;
-        }
-        .gen-img:hover { transform: scale(1.02); }
-
-        /* Entrada de Comandos */
         .input-area { 
             display: flex; 
             gap: 15px; 
@@ -132,35 +92,10 @@
             border: 1px solid var(--dark-gold);
         }
 
-        input { 
-            flex: 1; 
-            background: transparent; 
-            border: none; 
-            color: var(--gold); 
-            padding: 12px 20px; 
-            outline: none; 
-            font-size: 16px;
-            font-family: 'Courier New', monospace;
-        }
-
-        button { 
-            background: linear-gradient(135deg, var(--blood) 0%, #a00 100%); 
-            color: white; 
-            border: 1px solid var(--gold); 
-            padding: 10px 30px; 
-            border-radius: 30px;
-            cursor: pointer; 
-            font-weight: bold; 
-            text-transform: uppercase;
-            transition: 0.3s;
-        }
-
-        button:hover { 
-            box-shadow: 0 0 15px var(--gold); 
-            transform: translateY(-2px);
-        }
-
-        .sys-msg { color: #888; font-style: italic; font-size: 13px; text-align: center; margin: 10px 0; }
+        input { flex: 1; background: transparent; border: none; color: var(--gold); padding: 12px 20px; outline: none; font-size: 16px; }
+        button { background: linear-gradient(135deg, var(--blood) 0%, #a00 100%); color: white; border: 1px solid var(--gold); padding: 10px 30px; border-radius: 30px; cursor: pointer; font-weight: bold; }
+        
+        .divider { border-top: 1px solid var(--dark-gold); margin: 10px 0; opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -172,15 +107,15 @@
         
         <div class="status-panel">
             <div class="status-item">👤 IDENTIDAD <span id="stUser">Hamura</span></div>
-            <div class="status-item">🛡️ AVATAR <span id="stAvatar">Maestro Pokémon</span></div>
-            <div class="status-item">🤖 ENTIDAD <span id="stBot">Sebastian</span></div>
-            <div class="status-item">📍 ESCENARIO <span id="stPlace">Jardín Místico</span></div>
+            <div class="status-item">🛡️ AVATAR <span id="stAvatar">Aventurero Legendario</span></div>
+            <div class="status-item">🤖 ENTIDAD <span id="stBot">Grimorio</span></div>
+            <div class="status-item">📍 ESCENARIO <span id="stPlace">El Vacío Eterno</span></div>
         </div>
 
         <div id="chat"></div>
 
         <div class="input-area">
-            <input type="text" id="command" placeholder="Susurra tu comando o acción..." autofocus>
+            <input type="text" id="command" placeholder="Susurra tu voluntad o un comando..." autofocus>
             <button id="sendBtn">INVOCAR</button>
         </div>
     </div>
@@ -212,72 +147,75 @@
                 const div = document.createElement('div');
                 div.className = `message ${type}`;
                 let tag = (type === "user") ? `<span class="user-tag">[${config.miNombre}]</span>` : `<span class="bot-tag">[${config.nombreBot}]</span>`;
-                
-                if(isImg) {
-                    div.innerHTML = `${tag}<br><img src="${text}" class="gen-img">`;
-                } else {
-                    div.innerHTML = `${tag}<br>${text.replace(/\n/g, '<br>')}`;
-                }
+                div.innerHTML = isImg ? `${tag}<br><img src="${text}" class="gen-img">` : `${tag}<br>${text.replace(/\n/g, '<br>')}`;
                 chat.appendChild(div);
                 chat.scrollTop = chat.scrollHeight;
             }
 
-            async function llamarIA(msg, extra = "") {
+            function mostrarBienvenida() {
+                const manual = `✨ **PASO 1: ELIGE TU DESTINO**
+A) Rol Libre 🗡️ | B) Batallas ⚔️ | C) Sexrol 🔥
+
+✨ **PASO 2: INVOCACIÓN**
+Dime: "Transformate en [personaje]"
+
+──────────────────────────────────
+📜 **COMANDOS DE ALTA HECHICERÍA**
+👤 **Sobre ti:**
+• mi nombre: [nombre]
+• mi avatar: [personaje]
+🤖 **Sobre el Bot:**
+• nombre bot: [nombre]
+👥 **Extras:**
+• nombre extra: [viejo] > [nuevo]
+• forma extra: [nombre] > [apariencia]
+🖼️ **Visiones:**
+• escenario: [lugar]
+• generar imagen de [descripción]
+♻️ **retroceder** (reinicia todo)`;
+                addMessage(manual);
+            }
+
+            async function llamarIA(msg) {
                 if (!api_key) {
-                    api_key = prompt("🔑 EL GRIMORIO REQUIERE TU LLAVE (GROQ):")?.trim();
-                    if (!api_key) return "La magia requiere una llave.";
+                    api_key = prompt("🔑 LLAVE DE GROQ REQUERIDA:")?.trim();
+                    if (!api_key) return "Error: Llave no proporcionada.";
                 }
                 const url = "https://api.groq.com/openai/v1/chat/completions";
-                let ctx = `Actúa como ${config.nombreBot} (${config.personajeBot}). Usuario: ${config.miNombre} (${config.miAvatar}). Lugar: ${config.escenario}. Modo: ${config.destino}. Sé épico, inmersivo y no rompas el rol.`;
-                
+                let ctx = `Actúa como ${config.nombreBot} (${config.personajeBot}). Usuario: ${config.miNombre} (${config.miAvatar}). Lugar: ${config.escenario}. Modo: ${config.destino}.`;
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
                         headers: { "Authorization": `Bearer ${api_key}`, "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            model: "llama-3.3-70b-versatile",
-                            messages: [{ role: "system", content: ctx }, { role: "user", content: msg }],
-                            temperature: 0.9
-                        })
+                        body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{ role: "system", content: ctx }, { role: "user", content: msg }], temperature: 0.9 })
                     });
                     const data = await response.json();
                     return data.choices[0].message.content;
-                } catch (e) { return "✦ Las sombras han interrumpido la conexión ✦"; }
+                } catch (e) { return "✦ Error de conexión mística ✦"; }
             }
 
             async function procesar() {
                 let val = commandInput.value.trim();
                 if(!val) return;
-
                 if (val.toLowerCase() === "retroceder") { location.reload(); return; }
 
-                // GESTIÓN DE COMANDOS TÉCNICOS
-                if (val.toLowerCase().startsWith("escenario:")) {
-                    config.escenario = val.split(":")[1].trim();
-                    updateUI();
-                    chat.innerHTML += `<div class="sys-msg">📍 La realidad se deforma... lugar actual: ${config.escenario}</div>`;
-                    commandInput.value = ""; return;
+                if (val.toLowerCase().startsWith("escenario:")) { config.escenario = val.split(":")[1].trim(); updateUI(); addMessage(`<i>📍 Realidad cambiada: ${config.escenario}</i>`); commandInput.value = ""; return; }
+                if (val.toLowerCase().startsWith("generar imagen de")) { 
+                    let p = val.replace(/generar imagen de/i, "").trim(); 
+                    addMessage(`Invocando visión...`, "user"); 
+                    addMessage(`https://pollinations.ai/p/${encodeURIComponent(p)}?width=1024&height=1024&nologo=true`, "ai", true); 
+                    commandInput.value = ""; return; 
                 }
-
-                if (val.toLowerCase().startsWith("generar imagen de")) {
-                    let p = val.replace(/generar imagen de/i, "").trim();
-                    addMessage(`Invocando la visión de ${p}...`, "user");
-                    let url = `https://pollinations.ai/p/${encodeURIComponent(p)}?width=1024&height=1024&seed=${Math.random()}&nologo=true`;
-                    addMessage(url, "ai", true);
-                    commandInput.value = ""; return;
-                }
-
                 if (val.toLowerCase().startsWith("mi nombre:")) { config.miNombre = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
                 if (val.toLowerCase().startsWith("mi avatar:")) { config.miAvatar = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
                 if (val.toLowerCase().startsWith("nombre bot:")) { config.nombreBot = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
                 if (val.toLowerCase().startsWith("transformate en")) { config.personajeBot = val.replace(/transformate en/i, "").trim(); updateUI(); commandInput.value = ""; return; }
 
                 if (!config.destino) {
-                    if (val.toLowerCase() === "a") config.destino = "Rol Libre 🗡️";
-                    else if (val.toLowerCase() === "b") config.destino = "Batalla ⚔️";
-                    else if (val.toLowerCase() === "c") config.destino = "Sexrol 🔥";
-                    updateUI();
-                    addMessage("✥ Destino sellado. La historia comienza ahora. ✥");
+                    if (["a","b","c"].includes(val.toLowerCase())) {
+                        config.destino = val.toUpperCase() === "A" ? "Rol Libre 🗡️" : val.toUpperCase() === "B" ? "Batallas ⚔️" : "Sexrol 🔥";
+                        updateUI(); addMessage(`✨ Destino elegido: ${config.destino}`);
+                    } else { addMessage("Elige A, B o C."); }
                     commandInput.value = ""; return;
                 }
 
@@ -290,7 +228,7 @@
             sendBtn.onclick = procesar;
             commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
             updateUI();
-            addMessage("✨ **EL LIBRO DE LAS ALMAS TE SALUDA**\n\n1. Elige tu destino: **A**, **B** o **C**.\n2. Usa `escenario: [Lugar]` para viajar.\n3. Usa `generar imagen de [Cosa]` para ver el mundo.");
+            mostrarBienvenida();
         });
     </script>
 </body>
