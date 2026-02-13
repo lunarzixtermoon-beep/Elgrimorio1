@@ -3,212 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EL GRAN GRIMORIO - ULTRA WIDE</title>
+    <title>GRIMORIO v8.0 - CONTROL TOTAL</title>
     <style>
-        :root { --gold: #ffcc00; --dark: #0a0a0a; --accent: #00e5ff; }
+        :root { --gold: #ffcc00; --dark: #0a0a0a; --accent: #00e5ff; --panel-bg: rgba(20, 20, 20, 0.95); }
         
-        body { 
-            background: radial-gradient(circle, #1a1a1a 0%, #000 100%); 
-            color: #e0e0e0; 
-            font-family: 'Segoe UI', serif; 
-            margin: 0; padding: 20px; 
-            display: flex; justify-content: center;
+        body, html { 
+            height: 100%; margin: 0; padding: 0; 
+            background: #000; color: #e0e0e0; 
+            font-family: 'Segoe UI', sans-serif; overflow: hidden; 
         }
 
-        .container { 
-            width: 95vw; /* Casi todo el ancho de la pantalla */
-            max-width: 1400px; 
-            background: rgba(0,0,0,0.9); 
-            border: 2px solid #333; 
-            border-radius: 20px; 
-            padding: 25px; 
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        /* Contenedor Principal que ocupa TODA la pantalla sin desbordar */
+        .app-wrapper {
+            display: flex; flex-direction: column;
+            height: 100vh; width: 100vw;
         }
 
-        /* Panel de Estado Horizontal y Grande */
-        .status-panel { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 20px; 
-            margin-bottom: 25px; 
+        /* 1. PANEL SUPERIOR (Fijo y pequeño) */
+        .status-header {
+            background: var(--panel-bg);
+            border-bottom: 2px solid var(--gold);
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 10px; padding: 10px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 10;
         }
 
-        .status-box {
-            background: linear-gradient(145deg, #111, #050505);
-            border: 1px solid #444;
-            padding: 15px;
-            border-radius: 12px;
-            border-bottom: 3px solid var(--gold);
+        .status-box { border-left: 2px solid #333; padding-left: 10px; }
+        .label { font-size: 9px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+        .value { font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* 2. CHAT CENTRAL (Scrollable) */
+        #chat {
+            flex: 1; overflow-y: auto;
+            padding: 20px 10%; /* Espaciado lateral para que no toque los bordes */
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            display: flex; flex-direction: column;
         }
 
-        .status-label { font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; }
-        .status-value { font-size: 18px; font-weight: bold; color: #fff; margin-top: 5px; display: block; }
-
-        /* Chat Expandido */
-        #chat { 
-            height: 600px; 
-            overflow-y: auto; 
-            background: #050505; 
-            border: 1px solid #222; 
-            border-radius: 15px; 
-            padding: 30px; 
-            margin-bottom: 20px;
-            box-shadow: inset 0 0 50px #000;
-        }
-
-        .message { margin-bottom: 25px; line-height: 1.6; font-size: 17px; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-
+        .message { margin-bottom: 20px; font-size: 16px; line-height: 1.5; animation: fadeIn 0.3s; }
         .user-tag { color: var(--accent); font-weight: bold; }
         .bot-tag { color: var(--gold); font-weight: bold; }
 
-        /* Imágenes de Gran Tamaño */
         .gen-img { 
-            width: 100%; 
-            max-width: 800px; /* Imagen mucho más grande */
-            border-radius: 15px; 
-            border: 3px solid var(--gold); 
-            margin: 15px 0; 
-            display: block;
-            box-shadow: 0 0 30px rgba(255, 204, 0, 0.2);
+            width: 100%; max-width: 600px; 
+            border-radius: 10px; border: 2px solid var(--gold);
+            margin: 10px 0; display: block;
+            box-shadow: 0 5px 15px rgba(255, 204, 0, 0.2);
         }
 
-        /* Área de Entrada */
-        .input-area { 
-            display: flex; gap: 15px; 
-            background: #111; padding: 15px; 
-            border-radius: 50px; border: 1px solid #333;
+        /* 3. ÁREA DE ENTRADA (Fija abajo) */
+        .input-footer {
+            background: var(--panel-bg);
+            border-top: 1px solid #333;
+            padding: 15px 10%;
+            z-index: 10;
         }
 
-        input { 
-            flex: 1; background: transparent; border: none; 
-            color: #fff; padding: 10px 20px; outline: none; font-size: 18px; 
+        .input-bar {
+            display: flex; gap: 10px; background: #1a1a1a;
+            padding: 8px 20px; border-radius: 30px;
+            border: 1px solid #444;
         }
 
+        input { flex: 1; background: transparent; border: none; color: #fff; font-size: 16px; outline: none; }
         button { 
-            background: var(--gold); color: #000; 
-            border: none; padding: 10px 40px; 
-            border-radius: 30px; cursor: pointer; 
-            font-weight: bold; font-size: 16px;
-            transition: 0.3s;
+            background: var(--gold); color: #000; border: none;
+            padding: 8px 25px; border-radius: 20px; font-weight: bold;
+            cursor: pointer; transition: 0.2s;
         }
-        button:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--gold); }
+        button:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Scrollbar Estilizado */
+        #chat::-webkit-scrollbar { width: 6px; }
+        #chat::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="status-panel">
-            <div class="status-box"><span class="status-label">👤 Identidad</span><span id="stUser" class="status-value">Hamura</span></div>
-            <div class="status-box"><span class="status-label">🤖 Entidad</span><span id="stBot" class="status-value">Grimorio</span></div>
-            <div class="status-box"><span class="status-label">🛡️ Tu Avatar</span><span id="stAvatar" class="status-value">Aventurero</span></div>
-            <div class="status-box"><span class="status-label">📍 Ubicación</span><span id="stPlace" class="status-value">El Vacío</span></div>
-        </div>
 
-        <div id="chat"></div>
-
-        <div class="input-area">
-            <input type="text" id="command" placeholder="Transformate en... mi avatar: ... escenario: ..." autofocus>
-            <button id="sendBtn">INVOCAR</button>
-        </div>
+<div class="app-wrapper">
+    <div class="status-header">
+        <div class="status-box"><div class="label">👤 Identidad</div><div id="stUser" class="value">Hamura</div></div>
+        <div class="status-box"><div class="label">🤖 Entidad</div><div id="stBot" class="value">Grimorio</div></div>
+        <div class="status-box"><div class="label">🛡️ Avatar</div><div id="stAvatar" class="value">Aventurero</div></div>
+        <div class="status-box"><div class="label">📍 Ubicación</div><div id="stPlace" class="value">El Vacío</div></div>
     </div>
 
-    <script>
-        const chat = document.getElementById('chat');
-        const commandInput = document.getElementById('command');
-        const sendBtn = document.getElementById('sendBtn');
+    <div id="chat"></div>
 
-        let api_key = ""; 
-        let config = { miNombre: "Hamura", miAvatar: "Aventurero", nombreBot: "Grimorio", personajeBot: "Espíritu", escenario: "El Vacío", destino: "" };
+    <div class="input-footer">
+        <div class="input-bar">
+            <input type="text" id="command" placeholder="Transformate en... mi avatar: ... escenario: ..." autofocus>
+            <button id="sendBtn">ENVIAR</button>
+        </div>
+    </div>
+</div>
 
-        function updateUI() {
-            document.getElementById('stUser').innerText = config.miNombre;
-            document.getElementById('stAvatar').innerText = config.miAvatar;
-            document.getElementById('stBot').innerText = config.personajeBot;
-            document.getElementById('stPlace').innerText = config.escenario;
+<script>
+    const chat = document.getElementById('chat');
+    const commandInput = document.getElementById('command');
+    const sendBtn = document.getElementById('sendBtn');
+
+    let api_key = ""; 
+    let config = { miNombre: "Hamura", miAvatar: "Aventurero", nombreBot: "Grimorio", personajeBot: "Espíritu", escenario: "El Vacío", destino: "" };
+
+    function updateUI() {
+        document.getElementById('stUser').innerText = config.miNombre;
+        document.getElementById('stAvatar').innerText = config.miAvatar;
+        document.getElementById('stBot').innerText = config.personajeBot;
+        document.getElementById('stPlace').innerText = config.escenario;
+    }
+
+    function addMessage(text, type = "ai", isImg = false) {
+        const div = document.createElement('div');
+        div.className = `message ${type}`;
+        let tag = (type === "user") ? `<span class="user-tag">[${config.miNombre}]</span>` : `<span class="bot-tag">[${config.nombreBot}]</span>`;
+        div.innerHTML = isImg ? `${tag}<br><img src="${text}" class="gen-img">` : `${tag}<br>${text.replace(/\n/g, '<br>')}`;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function generar(p) {
+        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*9999)}`;
+        addMessage(url, "ai", true);
+    }
+
+    async function llamarIA(msg) {
+        if (!api_key) { api_key = prompt("🔑 API KEY DE GROQ:"); if (!api_key) return "Sin llave."; }
+        try {
+            const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: 'POST',
+                headers: { "Authorization": `Bearer ${api_key}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile",
+                    messages: [{role:"system", content:`Eres ${config.personajeBot}. Lugar: ${config.escenario}.`}, {role:"user", content:msg}]
+                })
+            });
+            const d = await r.json(); return d.choices[0].message.content;
+        } catch (e) { return "Error astral."; }
+    }
+
+    async function procesar() {
+        let val = commandInput.value.trim(); if(!val) return;
+        let low = val.toLowerCase();
+
+        if (low.startsWith("mi avatar:")) {
+            config.miAvatar = val.split(":")[1].trim(); updateUI();
+            addMessage(`✨ Avatar: ${config.miAvatar}`); generar(config.miAvatar + " fantasy portrait");
+            commandInput.value = ""; return;
+        }
+        if (low.startsWith("transformate en")) {
+            config.personajeBot = val.replace(/transformate en/i, "").replace(/:/g, "").trim(); updateUI();
+            addMessage(`🔮 Bot ahora es: ${config.personajeBot}`); generar(config.personajeBot + " epic character design");
+            commandInput.value = ""; return;
+        }
+        if (low.startsWith("escenario:")) {
+            config.escenario = val.split(":")[1].trim(); updateUI();
+            addMessage(`📍 Escenario: ${config.escenario}`); generar(config.escenario + " cinematic landscape");
+            commandInput.value = ""; return;
+        }
+        if (low.startsWith("mi nombre:")) { config.miNombre = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
+
+        if (!config.destino) {
+            if (["a","b","c"].includes(low)) { config.destino = low; addMessage("⚔️ Destino iniciado."); }
+            commandInput.value = ""; return;
         }
 
-        function addMessage(text, type = "ai", isImg = false) {
-            const div = document.createElement('div');
-            div.className = `message ${type}`;
-            let tag = (type === "user") ? `<span class="user-tag">[${config.miNombre}]</span>` : `<span class="bot-tag">[${config.nombreBot}]</span>`;
-            
-            if(isImg) {
-                div.innerHTML = `${tag}<br><img src="${text}" class="gen-img" onload="console.log('Cargada')" onerror="this.src='https://via.placeholder.com/800x400?text=Invocando+Imagen...'">`;
-            } else {
-                div.innerHTML = `${tag}<br>${text.replace(/\n/g, '<br>')}`;
-            }
-            chat.appendChild(div);
-            chat.scrollTop = chat.scrollHeight;
-        }
+        addMessage(val, "user"); commandInput.value = "";
+        const res = await llamarIA(val); addMessage(res, "ai");
+    }
 
-        function generar(prompt) {
-            // URL Directa de Pollinations para mayor estabilidad
-            const seed = Math.floor(Math.random() * 99999);
-            const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}`;
-            addMessage(url, "ai", true);
-        }
-
-        async function llamarIA(msg) {
-            if (!api_key) { api_key = prompt("🔑 API KEY DE GROQ:"); if (!api_key) return "Error."; }
-            try {
-                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: 'POST',
-                    headers: { "Authorization": `Bearer ${api_key}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile",
-                        messages: [{ role: "system", content: `Eres ${config.personajeBot}. Usuario: ${config.miNombre} (${config.miAvatar}). Lugar: ${config.escenario}.` }, { role: "user", content: msg }],
-                        temperature: 0.8
-                    })
-                });
-                const data = await response.json();
-                return data.choices[0].message.content;
-            } catch (e) { return "✦ Error místico ✦"; }
-        }
-
-        async function procesar() {
-            let val = commandInput.value.trim();
-            if(!val) return;
-            let low = val.toLowerCase();
-
-            if (low.startsWith("mi avatar:")) {
-                config.miAvatar = val.split(":")[1].trim();
-                updateUI();
-                addMessage(`✨ Has cambiado tu apariencia a: ${config.miAvatar}`);
-                generar(`A high quality digital art portrait of ${config.miAvatar}, fantasy style`);
-                commandInput.value = ""; return;
-            }
-
-            if (low.startsWith("transformate en")) {
-                config.personajeBot = val.replace(/transformate en/i, "").replace(/:/g, "").trim();
-                updateUI();
-                addMessage(`🔮 El bot ahora es: ${config.personajeBot}`);
-                generar(`Epic character design of ${config.personajeBot}, masterpiece, anime style`);
-                commandInput.value = ""; return;
-            }
-
-            if (low.startsWith("escenario:")) {
-                config.escenario = val.split(":")[1].trim();
-                updateUI();
-                addMessage(`📍 El mundo cambia a: ${config.escenario}`);
-                generar(`Cinematic fantasy landscape of ${config.escenario}, 8k resolution`);
-                commandInput.value = ""; return;
-            }
-
-            if (!config.destino) {
-                if (["a","b","c"].includes(low)) { config.destino = low; updateUI(); addMessage("⚔️ Destino Sellado."); }
-                commandInput.value = ""; return;
-            }
-
-            addMessage(val, "user");
-            commandInput.value = "";
-            const res = await llamarIA(val);
-            addMessage(res, "ai");
-        }
-
-        sendBtn.onclick = procesar;
-        commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
-        updateUI();
-        addMessage("✨ **SISTEMA ACTIVADO**\n• Usa `mi avatar: [forma]`\n• Usa `transformate en: [forma]`\n• Usa `escenario: [lugar]`");
-    </script>
+    sendBtn.onclick = procesar;
+    commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
+    updateUI();
+    addMessage("✨ **CONSOLA ACTIVADA**\nEscribe `mi avatar: ...`, `transformate en: ...` o elige **A, B o C**.");
+</script>
 </body>
 </html>
