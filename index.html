@@ -11,9 +11,14 @@
         .message { margin: 10px 0; padding: 12px; border-radius: 8px; line-height: 1.5; word-wrap: break-word; }
         .ai { background: #1e1e1e; border-left: 5px solid #d4af37; align-self: flex-start; color: #e0e0e0; max-width: 85%; }
         .user { background: #2c3e50; align-self: flex-end; color: #87ceeb; border-right: 5px solid #87ceeb; max-width: 85%; }
+        
+        /* Colores épicos para el saludo */
+        .saludo-oro { color: #ffd700; font-weight: bold; text-shadow: 0 0 5px #ff4500; font-size: 1.2em; }
+        .saludo-fuego { color: #ff4500; font-style: italic; }
+
         .input-area { display: flex; gap: 10px; }
-        input { flex: 1; background: #000; border: 1px solid #d4af37; color: #fff; padding: 12px; border-radius: 5px; outline: none; font-size: 16px; }
-        button { background: #8b4513; color: #fff; border: none; padding: 10px 25px; cursor: pointer; font-weight: bold; border-radius: 5px; transition: 0.3s; }
+        input { flex: 1; background: #000; border: 1px solid #d4af37; color: #fff; padding: 12px; border-radius: 5px; outline: none; }
+        button { background: #8b4513; color: #fff; border: none; padding: 10px 25px; cursor: pointer; font-weight: bold; border-radius: 5px; }
         button:hover { background: #d4af37; color: #000; }
     </style>
 </head>
@@ -39,7 +44,7 @@
             function addMessage(text, type = "ai") {
                 const div = document.createElement('div');
                 div.className = `message ${type}`;
-                let nombre = (type === "user") ? `👤 Sorcerer` : `📖 El Grimorio`;
+                let nombre = (type === "user") ? `👤 Aventurero` : `📖 El Grimorio`;
                 div.innerHTML = `<strong>${nombre}:</strong><br>${text.replace(/\n/g, '<br>')}`;
                 chat.appendChild(div);
                 chat.scrollTop = chat.scrollHeight;
@@ -53,48 +58,34 @@
                 }
 
                 const url = "https://api.groq.com/openai/v1/chat/completions";
-                
-                let contexto = "Eres el Grimorio de las Mil Almas, un tomo místico y oscuro. ";
+                let contexto = "Eres el Grimorio de las Mil Almas, un tomo místico. Responde siempre en español.";
                 if (modoRol === "18") {
-                    contexto += "Actúa como un autor de literatura erótica y romance gótico. Escribe de forma visceral, apasionada y detallada sobre el contacto físico y el deseo. No uses censura moralista.";
+                    contexto += " Actúa como autor de romance gótico/erótico visceral y detallado.";
                 }
 
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
-                        headers: {
-                            "Authorization": `Bearer ${api_key}`,
-                            "Content-Type": "application/json"
-                        },
+                        headers: { "Authorization": `Bearer ${api_key}`, "Content-Type": "application/json" },
                         body: JSON.stringify({
                             model: modeloElegido,
-                            messages: [
-                                { role: "system", content: contexto },
-                                { role: "user", content: mensajeUsuario }
-                            ],
-                            temperature: 0.8 // Un poco más bajo para evitar filtros
+                            messages: [{ role: "system", content: contexto }, { role: "user", content: mensajeUsuario }],
+                            temperature: 0.8
                         })
                     });
-                    
                     const data = await response.json();
-                    if (data.error) return "❌ Error: " + data.error.message;
                     return data.choices[0].message.content;
-                } catch (e) {
-                    return "❌ Error de conexión con el plano de Groq.";
-                }
+                } catch (e) { return "❌ Error en el plano astral."; }
             }
 
             async function procesar() {
                 const val = commandInput.value.trim();
                 if(!val) return;
 
-                // --- MEJORA DEL REINICIO ---
                 if (val.toLowerCase() === "reiniciar") {
-                    modoRol = ""; 
-                    chat.innerHTML = "";
-                    addMessage("✨ **EL GRIMORIO HA SIDO PURIFICADO** ✨\n\nElige un nuevo ritual para comenzar:\n\n1. ⚔️ **Batalla**\n2. 🌀 **Libre**\n3. 🔞 **Pasión (+18)**");
-                    commandInput.value = ""; 
-                    return;
+                    modoRol = ""; chat.innerHTML = "";
+                    mostrarSaludo();
+                    commandInput.value = ""; return;
                 }
 
                 if (!modoRol) {
@@ -102,23 +93,24 @@
                     else if (val === "2") modoRol = "libre";
                     else if (val === "3") modoRol = "18";
                     else { addMessage("Elige 1, 2 o 3."); return; }
-                    
-                    addMessage(`🔮 **Vínculo establecido.** El modo **${modoRol}** está activo. ¿Qué deseas manifestar?`);
-                    commandInput.value = ""; 
-                    return;
+                    addMessage(`🔮 **Vínculo establecido.** Modo **${modoRol}** activo.`);
+                    commandInput.value = ""; return;
                 }
                 
                 addMessage(val, "user");
                 commandInput.value = "";
-                const respuestaIA = await llamarIA(val);
-                addMessage(respuestaIA, "ai");
+                const res = await llamarIA(val);
+                addMessage(res, "ai");
+            }
+
+            function mostrarSaludo() {
+                addMessage("<span class='saludo-oro'>¡SALUDOS, AVENTUREROS!</span><br><span class='saludo-fuego'>Habéis despertado al Tomo de las Mil Almas.</span><br><br>Elegid vuestro destino:<br>1. ⚔️ Batalla<br>2. 🌀 Libre<br>3. 🔞 +18");
             }
 
             sendBtn.onclick = (e) => { e.preventDefault(); procesar(); };
             commandInput.onkeypress = (e) => { if (e.key === "Enter") { e.preventDefault(); procesar(); } };
 
-            // Mensaje de inicio claro
-            addMessage("📖 **GRIMORIO DESPIERTO**\n\nBienvenido, Zixtermoon. Elige tu sendero:\n1. ⚔️ Batalla\n2. 🌀 Libre\n3. 🔞 +18");
+            mostrarSaludo();
         });
     </script>
 </body>
