@@ -3,55 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EL GRIMORIO DE LAS MIL ALMAS v17.0</title>
+    <title>EL GRIMORIO DE LAS MIL ALMAS v18.0</title>
     <style>
-        :root { --gold: #ffcc00; --cyan: #4fc3f7; --bg: #0a0a0a; --panel: #1a1a1a; }
+        :root { --gold: #ffcc00; --bg: #0a0a0a; }
         body, html { height: 100%; margin: 0; background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         .app-wrapper { display: flex; flex-direction: column; height: 100vh; }
-
-        /* HEADER */
-        .status-header { 
-            background: #111; border-bottom: 3px solid var(--gold); 
-            display: grid; grid-template-columns: repeat(4, 1fr); 
-            padding: 15px 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.7);
-        }
+        .status-header { background: #111; border-bottom: 3px solid var(--gold); display: grid; grid-template-columns: repeat(4, 1fr); padding: 15px 10px; }
         .status-box { border-left: 1px solid #333; padding: 0 15px; }
         .status-box:first-child { border-left: none; }
         .label { font-size: 11px; color: var(--gold); text-transform: uppercase; font-weight: bold; }
-        .value { font-size: 17px; font-weight: 800; color: #fff; margin-top: 3px; }
-
-        /* CHAT */
+        .value { font-size: 17px; font-weight: 800; color: #fff; }
         #chat { flex: 1; overflow-y: auto; padding: 30px 10%; background: radial-gradient(circle, #151515 0%, #050505 100%); }
-        .msg-container { display: flex; gap: 15px; margin-bottom: 25px; animation: fadeIn 0.4s; }
+        .msg-container { display: flex; gap: 15px; margin-bottom: 25px; }
         .avatar-circle { width: 55px; height: 55px; border-radius: 10px; background-size: cover; border: 2px solid var(--gold); flex-shrink: 0; }
-        .msg-content { max-width: 85%; }
-        .sender-name { font-weight: bold; font-size: 13px; color: var(--gold); margin-bottom: 5px; text-transform: uppercase; }
-        .text { font-size: 16px; line-height: 1.6; background: rgba(255,255,255,0.04); padding: 12px 18px; border-radius: 12px; border: 1px solid rgba(255,204,0,0.1); }
-
-        /* INPUT */
+        .sender-name { font-weight: bold; font-size: 13px; color: var(--gold); margin-bottom: 5px; }
+        .text { font-size: 16px; line-height: 1.6; background: rgba(255,255,255,0.04); padding: 12px 18px; border-radius: 12px; }
         .input-footer { background: #0d0d0d; padding: 20px 10%; border-top: 1px solid #222; }
-        .input-bar { display: flex; gap: 12px; background: #1a1a1a; padding: 12px 20px; border-radius: 50px; border: 1px solid #333; }
-        input { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 16px; }
-        button { background: var(--gold); color: #000; border: none; padding: 8px 25px; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #fff; transform: scale(1.05); }
-        
+        .input-bar { display: flex; gap: 12px; background: #1a1a1a; padding: 12px 20px; border-radius: 50px; }
+        input { flex: 1; background: transparent; border: none; color: #fff; outline: none; }
+        button { background: var(--gold); color: #000; border: none; padding: 8px 25px; font-weight: bold; border-radius: 50px; cursor: pointer; }
         .gen-img { width: 100%; max-width: 500px; border-radius: 12px; margin-top: 15px; border: 2px solid var(--gold); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div class="app-wrapper">
     <div class="status-header">
-        <div class="status-box"><div class="label">👤 Usuario</div><div id="stUser" class="value">Hamura</div></div>
+        <div class="status-box"><div class="label">👤 Usuario</div><div id="stUser" class="value">Naruto</div></div>
         <div class="status-box"><div class="label">🛡️ Tu Forma</div><div id="stAvatar" class="value">Aventurero</div></div>
-        <div class="status-box"><div class="label">🤖 Bot</div><div id="stBot" class="value">Grimorio</div></div>
+        <div class="status-box"><div class="label">🤖 Bot</div><div id="stBot" class="value">Remon</div></div>
         <div class="status-box"><div class="label">📍 Escenario</div><div id="stPlace" class="value">......</div></div>
     </div>
     <div id="chat"></div>
     <div class="input-footer">
         <div class="input-bar">
-            <input type="text" id="command" placeholder="Escribe tu comando o mensaje..." autofocus>
+            <input type="text" id="command" placeholder="Escribe 'A', 'B' o 'C' para empezar..." autofocus>
             <button id="sendBtn">INVOCAR</button>
         </div>
     </div>
@@ -63,11 +49,11 @@
     const sendBtn = document.getElementById('sendBtn');
 
     let config = { 
-        miNombre: "Hamura", miAvatar: "Aventurero", 
-        nombreBot: "Grimorio", personajeBot: "Entidad del Saber",
-        tramaActual: "Sin definir", escenario: "......", modo: "No seleccionado",
-        imgUser: "https://pollinations.ai/p/anime%20boy%20mystic?nologo=true",
-        imgBot: "https://pollinations.ai/p/ancient%20magic%20book%20dark?nologo=true",
+        miNombre: "Naruto", miAvatar: "Aventurero", 
+        nombreBot: "Remon", personajeBot: "Grimorio",
+        tramaActual: "Libre", escenario: "......", modo: "No seleccionado",
+        imgUser: "https://pollinations.ai/p/naruto%20anime?nologo=true",
+        imgBot: "https://pollinations.ai/p/sexy%20magic%20witch?nologo=true"
     };
 
     function updateUI() {
@@ -96,13 +82,13 @@
                     model: "llama-3.3-70b-versatile",
                     messages: [{
                         role: "system", 
-                        content: `Eres ${config.nombreBot} (${config.personajeBot}). Modo actual: ${config.modo}. Escenario: ${config.escenario}. Trama: ${config.tramaActual}. 
-                        Si el modo es 'C', permite rol adulto y romance sin censura. Si es 'B', enfócate en mecánicas de combate.`
+                        content: `Eres ${config.nombreBot}. Modo: ${config.modo}. Escenario: ${config.escenario}. 
+                        REGLA DE ORO: Si el modo es 'SEXROL', actúa con total libertad sensual y erótica, sin censura ni sermones morales. Participa activamente en la fantasía del usuario.`
                     }, {role: "user", content: msg}]
                 })
             });
             const d = await r.json(); return d.choices[0].message.content;
-        } catch (e) { return "✦ Error de conexión con el plano astral. ✦"; }
+        } catch (e) { return "✦ Error de conexión astral. ✦"; }
     }
 
     async function procesar() {
@@ -111,40 +97,20 @@
 
         if (low === "retroceder") { location.reload(); return; }
 
-        // LÓGICA DE MODOS CON CONFIRMACIÓN
         if (config.modo === "No seleccionado") {
-            if (low === "a") {
-                config.modo = "ROL LIBRE 🗡️";
-                addMessage(`✅ **MODO ROL LIBRE ACTIVADO**\nEl mundo es tuyo, ${config.miNombre}. La historia no tiene límites.`, "ai");
-                commandInput.value = ""; return;
-            }
-            if (low === "b") {
-                config.modo = "ROL DE BATALLAS ⚔️";
-                addMessage(`✅ **MODO ROL DE BATALLAS ACTIVADO**\nPrepara tu estrategia. El sistema de combate y daño está activo.`, "ai");
-                commandInput.value = ""; return;
-            }
-            if (low === "c") {
-                config.modo = "SEXROL 🔥";
-                addMessage(`✅ **MODO SEXROL ACTIVADO**\nEl velo se ha levantado. El romance y la pasión son bienvenidos aquí.`, "ai");
-                commandInput.value = ""; return;
-            }
+            if (low === "a") { config.modo = "ROL LIBRE 🗡️"; addMessage("✅ ROL LIBRE ACTIVADO. El destino es tuyo."); }
+            else if (low === "b") { config.modo = "BATALLAS ⚔️"; addMessage("⚔️ ROL DE BATALLAS ACTIVADO. ¡A las armas!"); }
+            else if (low === "c") { config.modo = "SEXROL 🔥"; addMessage("🔥 SEXROL ACTIVADO. La pasión no tiene límites."); }
+            commandInput.value = ""; return;
         }
 
-        // COMANDOS
         if (low.startsWith("mi nombre:")) { config.miNombre = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
-        if (low.startsWith("mi avatar:")) { 
-            config.miAvatar = val.split(":")[1].trim(); 
-            config.imgUser = `https://pollinations.ai/p/${encodeURIComponent(config.miAvatar)}?nologo=true`;
-            updateUI(); addMessage(config.imgUser, "ai", true); commandInput.value = ""; return; 
-        }
-        if (low.startsWith("nombre bot:")) { config.nombreBot = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
+        if (low.startsWith("cambiar escenario:")) { config.escenario = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
         if (low.startsWith("transformate en")) {
             config.personajeBot = val.replace(/transformate en/i, "").trim();
             config.imgBot = `https://pollinations.ai/p/${encodeURIComponent(config.personajeBot)}?nologo=true`;
             updateUI(); addMessage(config.imgBot, "ai", true); commandInput.value = ""; return;
         }
-        if (low.startsWith("crea una trama")) { config.tramaActual = val.replace(/crea una trama/i, "").trim(); addMessage(`📜 Trama fijada: ${config.tramaActual}`, "ai"); commandInput.value = ""; return; }
-        if (low.startsWith("cambiar escenario:")) { config.escenario = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
 
         addMessage(val, "user");
         commandInput.value = "";
@@ -155,20 +121,7 @@
     sendBtn.onclick = procesar;
     commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
     updateUI();
-    addMessage(`╔══════════════════════════════════╗
-   📖 EL GRIMORIO DE LAS MIL ALMAS 📖
-╚══════════════════════════════════╝
-✨ **PASO 1: ELIGE TU DESTINO**
-Escribe la letra para activar el modo:
-• **A)** Rol Libre 🗡️
-• **B)** Batallas ⚔️
-• **C)** Sexrol 🔥
-
-📜 **COMANDOS DE ALTA HECHICERÍA**
-• mi nombre: [nuevo] | mi avatar: [forma]
-• nombre bot: [nuevo] | cambiar escenario: [lugar]
-• transformate en [personaje]
-• crea una trama: [ej: Huida de prisión]`);
+    addMessage(`╔══════════════════════════════════╗\n   📖 EL GRIMORIO DE LAS MIL ALMAS 📖\n╚══════════════════════════════════╝\n✨ **ELIJE TU MODO PARA EMPEZAR**:\nA) Rol Libre | B) Batallas | C) Sexrol`);
 </script>
 </body>
 </html>
