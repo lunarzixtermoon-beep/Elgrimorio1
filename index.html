@@ -3,52 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimorio de las Mil Almas - v4.0</title>
+    <title>EL GRAN GRIMORIO DE LAS MIL ALMAS</title>
     <style>
-        body { background: #0a0a0a; color: #d4af37; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; padding: 20px; margin: 0; }
-        .container { width: 100%; max-width: 850px; background: #151515; border: 2px solid #8b4513; border-radius: 8px; padding: 20px; box-shadow: 0 0 40px #000; }
-        
-        /* Panel de Estado Inteligente */
-        .status-panel { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #000; border: 1px solid #444; 
-            padding: 12px; margin-bottom: 15px; font-size: 11px; color: #ffd700; border-radius: 4px; border-left: 4px solid #8b4513;
+        :root {
+            --gold: #ffcc00;
+            --dark-gold: #8b4513;
+            --blood: #5a0000;
+            --shadow: #0a0a0a;
+            --glass: rgba(20, 20, 20, 0.95);
         }
-        .status-item span { color: #fff; font-weight: bold; }
 
-        .header-box { text-align: center; color: #ffd700; margin-bottom: 15px; white-space: pre; font-weight: bold; line-height: 1.2; font-size: 12px; }
-        
-        #chat { height: 500px; overflow-y: auto; border: 1px solid #333; margin-bottom: 15px; padding: 15px; background: #000; color: #ccc; border-radius: 4px; font-size: 14px; scroll-behavior: smooth; }
-        .message { margin: 12px 0; border-bottom: 1px solid rgba(212,175,55,0.1); padding-bottom: 8px; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Imágenes Místicas */
-        .gen-img { width: 100%; max-width: 500px; border: 2px solid #d4af37; margin-top: 15px; border-radius: 8px; display: block; box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+        body { 
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%); 
+            color: #e0e0e0; 
+            font-family: 'Georgia', serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh;
+            margin: 0; 
+            padding: 20px;
+            overflow-x: hidden;
+        }
 
-        .input-area { display: flex; gap: 10px; background: #111; padding: 12px; border: 1px solid #444; border-radius: 4px; }
-        input { flex: 1; background: #050505; border: 1px solid #8b4513; color: #ffd700; padding: 12px; outline: none; font-size: 15px; }
-        button { background: #5a0000; color: #fff; border: 1px solid #d4af37; padding: 10px 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #8b0000; box-shadow: 0 0 10px #ff0000; }
-        
-        i { color: #888; font-size: 0.9em; } /* Para mensajes de sistema */
+        .container { 
+            width: 100%; 
+            max-width: 1000px; 
+            background: var(--glass); 
+            border: 3px solid var(--dark-gold); 
+            border-radius: 15px; 
+            padding: 30px; 
+            box-shadow: 0 0 50px rgba(139, 69, 19, 0.5), inset 0 0 20px #000;
+            position: relative;
+        }
+
+        /* Cabecera Épica */
+        .header-box { 
+            text-align: center; 
+            color: var(--gold); 
+            margin-bottom: 25px; 
+            font-size: 18px;
+            text-shadow: 0 0 10px var(--gold);
+            letter-spacing: 2px;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; text-shadow: 0 0 20px var(--gold); }
+            100% { opacity: 0.8; }
+        }
+
+        /* Panel de Estado Estilo RPG */
+        .status-panel { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; 
+            background: rgba(0,0,0,0.8); 
+            border: 2px ridge var(--dark-gold); 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            border-radius: 10px;
+        }
+
+        .status-item {
+            font-size: 13px;
+            color: var(--gold);
+            text-transform: uppercase;
+            border-left: 3px solid var(--blood);
+            padding-left: 10px;
+        }
+
+        .status-item span { color: #fff; font-size: 15px; display: block; margin-top: 4px; font-weight: bold; }
+
+        /* Área de Chat */
+        #chat { 
+            height: 550px; 
+            overflow-y: auto; 
+            border: 1px solid #333; 
+            padding: 20px; 
+            background: url('https://www.transparenttextures.com/patterns/black-paper.png'), #050505;
+            border-radius: 8px; 
+            box-shadow: inset 0 0 30px #000;
+            scrollbar-width: thin;
+            scrollbar-color: var(--dark-gold) #000;
+        }
+
+        #chat::-webkit-scrollbar { width: 8px; }
+        #chat::-webkit-scrollbar-thumb { background: var(--dark-gold); border-radius: 10px; }
+
+        .message { 
+            margin: 15px 0; 
+            padding-bottom: 10px; 
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            line-height: 1.6;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .user-tag { color: #4fc3f7; font-weight: bold; text-shadow: 0 0 5px #4fc3f7; }
+        .bot-tag { color: var(--gold); font-weight: bold; text-shadow: 0 0 5px var(--gold); }
+
+        /* Imágenes de Invocación */
+        .gen-img { 
+            width: 100%; 
+            max-width: 600px; 
+            border: 3px solid var(--gold); 
+            margin: 20px auto; 
+            border-radius: 12px; 
+            display: block;
+            box-shadow: 0 0 25px rgba(255, 204, 0, 0.4);
+            transition: transform 0.3s;
+        }
+        .gen-img:hover { transform: scale(1.02); }
+
+        /* Entrada de Comandos */
+        .input-area { 
+            display: flex; 
+            gap: 15px; 
+            margin-top: 20px; 
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50px;
+            border: 1px solid var(--dark-gold);
+        }
+
+        input { 
+            flex: 1; 
+            background: transparent; 
+            border: none; 
+            color: var(--gold); 
+            padding: 12px 20px; 
+            outline: none; 
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+        }
+
+        button { 
+            background: linear-gradient(135deg, var(--blood) 0%, #a00 100%); 
+            color: white; 
+            border: 1px solid var(--gold); 
+            padding: 10px 30px; 
+            border-radius: 30px;
+            cursor: pointer; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        button:hover { 
+            box-shadow: 0 0 15px var(--gold); 
+            transform: translateY(-2px);
+        }
+
+        .sys-msg { color: #888; font-style: italic; font-size: 13px; text-align: center; margin: 10px 0; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-box">
-╔══════════════════════════════════╗
-   📖 EL GRIMORIO DE LAS MIL ALMAS 📖
-╚══════════════════════════════════╝</div>
+ ✥ ════════════════════════════════════════════ ✥
+    ✨ EL GRAN GRIMORIO DE LAS MIL ALMAS ✨
+ ✥ ════════════════════════════════════════════ ✥</div>
         
         <div class="status-panel">
-            <div class="status-item">👤 YO: <span id="stUser">Aventurero</span></div>
-            <div class="status-item">🤖 BOT: <span id="stBot">El Grimorio</span></div>
-            <div class="status-item">🎭 MODO: <span id="stMode">Sin destino</span></div>
-            <div class="status-item">📍 LUGAR: <span id="stPlace">El Vacío</span></div>
+            <div class="status-item">👤 IDENTIDAD <span id="stUser">Hamura</span></div>
+            <div class="status-item">🛡️ AVATAR <span id="stAvatar">Maestro Pokémon</span></div>
+            <div class="status-item">🤖 ENTIDAD <span id="stBot">Sebastian</span></div>
+            <div class="status-item">📍 ESCENARIO <span id="stPlace">Jardín Místico</span></div>
         </div>
 
         <div id="chat"></div>
+
         <div class="input-area">
-            <input type="text" id="command" placeholder="Escribe tu voluntad o un comando..." autofocus>
+            <input type="text" id="command" placeholder="Susurra tu comando o acción..." autofocus>
             <button id="sendBtn">INVOCAR</button>
         </div>
     </div>
@@ -63,58 +195,54 @@
             let config = {
                 destino: "",
                 miNombre: "Hamura",
-                miAvatar: "Aventurero",
-                nombreBot: "El Grimorio",
-                personajeBot: "Guía místico",
-                escenario: "El Vacío"
+                miAvatar: "Aventurero Legendario",
+                nombreBot: "Grimorio",
+                personajeBot: "Espíritu del Tomo",
+                escenario: "El Vacío Eterno"
             };
 
             function updateUI() {
                 document.getElementById('stUser').innerText = config.miNombre;
+                document.getElementById('stAvatar').innerText = config.miAvatar;
                 document.getElementById('stBot').innerText = config.nombreBot;
-                document.getElementById('stMode').innerText = config.destino || "Elegir A, B o C";
                 document.getElementById('stPlace').innerText = config.escenario;
             }
 
             function addMessage(text, type = "ai", isImg = false) {
                 const div = document.createElement('div');
                 div.className = `message ${type}`;
-                let nombre = (type === "user") ? `[${config.miNombre}]` : `[${config.nombreBot}]`;
+                let tag = (type === "user") ? `<span class="user-tag">[${config.miNombre}]</span>` : `<span class="bot-tag">[${config.nombreBot}]</span>`;
                 
                 if(isImg) {
-                    div.innerHTML = `<strong>${nombre}:</strong><br><img src="${text}" class="gen-img" alt="Invocación visual">`;
+                    div.innerHTML = `${tag}<br><img src="${text}" class="gen-img">`;
                 } else {
-                    div.innerHTML = `<strong>${nombre}:</strong><br>${text.replace(/\n/g, '<br>')}`;
+                    div.innerHTML = `${tag}<br>${text.replace(/\n/g, '<br>')}`;
                 }
                 chat.appendChild(div);
                 chat.scrollTop = chat.scrollHeight;
             }
 
-            async function llamarIA(mensajeUsuario, instruccionExtra = "") {
+            async function llamarIA(msg, extra = "") {
                 if (!api_key) {
-                    api_key = prompt("🔑 PEGA TU LLAVE DE GROQ (gsk_...):")?.trim();
-                    if (!api_key) return "❌ Sin llave no hay magia.";
+                    api_key = prompt("🔑 EL GRIMORIO REQUIERE TU LLAVE (GROQ):")?.trim();
+                    if (!api_key) return "La magia requiere una llave.";
                 }
-
                 const url = "https://api.groq.com/openai/v1/chat/completions";
-                let contexto = `No rompas el rol. TÚ ERES: ${config.nombreBot} actuando como ${config.personajeBot}. 
-                USUARIO: ${config.miNombre} actuando como ${config.miAvatar}. 
-                ESCENARIO: ${config.escenario}. MODO: ${config.destino}. 
-                ${instruccionExtra}`;
-
+                let ctx = `Actúa como ${config.nombreBot} (${config.personajeBot}). Usuario: ${config.miNombre} (${config.miAvatar}). Lugar: ${config.escenario}. Modo: ${config.destino}. Sé épico, inmersivo y no rompas el rol.`;
+                
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
                         headers: { "Authorization": `Bearer ${api_key}`, "Content-Type": "application/json" },
                         body: JSON.stringify({
                             model: "llama-3.3-70b-versatile",
-                            messages: [{ role: "system", content: contexto }, { role: "user", content: mensajeUsuario }],
+                            messages: [{ role: "system", content: ctx }, { role: "user", content: msg }],
                             temperature: 0.9
                         })
                     });
                     const data = await response.json();
                     return data.choices[0].message.content;
-                } catch (e) { return "❌ Las sombras han bloqueado la conexión."; }
+                } catch (e) { return "✦ Las sombras han interrumpido la conexión ✦"; }
             }
 
             async function procesar() {
@@ -123,58 +251,46 @@
 
                 if (val.toLowerCase() === "retroceder") { location.reload(); return; }
 
-                // COMANDO: ESCENARIO (Prioridad)
+                // GESTIÓN DE COMANDOS TÉCNICOS
                 if (val.toLowerCase().startsWith("escenario:")) {
                     config.escenario = val.split(":")[1].trim();
                     updateUI();
-                    addMessage(`<i>📍 El entorno ha mutado a: ${config.escenario}</i>`, "ai");
+                    chat.innerHTML += `<div class="sys-msg">📍 La realidad se deforma... lugar actual: ${config.escenario}</div>`;
                     commandInput.value = ""; return;
                 }
 
-                // COMANDO: GENERAR IMAGEN
                 if (val.toLowerCase().startsWith("generar imagen de")) {
-                    let promptImg = val.replace(/generar imagen de/i, "").trim();
-                    addMessage(`Invocando visión de: ${promptImg}...`, "user");
-                    // Usamos Pollinations AI para la generación rápida
-                    let urlImg = `https://pollinations.ai/p/${encodeURIComponent(promptImg)}?width=1024&height=1024&seed=${Math.floor(Math.random()*1000)}&nologo=true`;
-                    addMessage(urlImg, "ai", true);
+                    let p = val.replace(/generar imagen de/i, "").trim();
+                    addMessage(`Invocando la visión de ${p}...`, "user");
+                    let url = `https://pollinations.ai/p/${encodeURIComponent(p)}?width=1024&height=1024&seed=${Math.random()}&nologo=true`;
+                    addMessage(url, "ai", true);
                     commandInput.value = ""; return;
                 }
 
-                // COMANDOS DE IDENTIDAD
-                if (val.toLowerCase().startsWith("mi nombre:")) { config.miNombre = val.split(":")[1].trim(); updateUI(); addMessage("<i>✅ Nombre registrado.</i>", "ai"); commandInput.value = ""; return; }
-                if (val.toLowerCase().startsWith("mi avatar:")) { config.miAvatar = val.split(":")[1].trim(); updateUI(); addMessage("<i>✅ Avatar definido.</i>", "ai"); commandInput.value = ""; return; }
-                if (val.toLowerCase().startsWith("nombre bot:")) { config.nombreBot = val.split(":")[1].trim(); updateUI(); addMessage("<i>✅ Identidad del bot actualizada.</i>", "ai"); commandInput.value = ""; return; }
-                if (val.toLowerCase().startsWith("transformate en")) { 
-                    config.personajeBot = val.replace(/transformate en/i, "").trim(); 
-                    updateUI(); addMessage(`<i>🔮 He tomado la forma de: ${config.personajeBot}</i>`, "ai"); 
-                    commandInput.value = ""; return; 
-                }
+                if (val.toLowerCase().startsWith("mi nombre:")) { config.miNombre = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
+                if (val.toLowerCase().startsWith("mi avatar:")) { config.miAvatar = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
+                if (val.toLowerCase().startsWith("nombre bot:")) { config.nombreBot = val.split(":")[1].trim(); updateUI(); commandInput.value = ""; return; }
+                if (val.toLowerCase().startsWith("transformate en")) { config.personajeBot = val.replace(/transformate en/i, "").trim(); updateUI(); commandInput.value = ""; return; }
 
-                // Selección de destino
                 if (!config.destino) {
                     if (val.toLowerCase() === "a") config.destino = "Rol Libre 🗡️";
-                    else if (val.toLowerCase() === "b") config.destino = "Batallas ⚔️";
+                    else if (val.toLowerCase() === "b") config.destino = "Batalla ⚔️";
                     else if (val.toLowerCase() === "c") config.destino = "Sexrol 🔥";
-                    else { addMessage("Elige tu destino: A, B o C."); return; }
                     updateUI();
-                    addMessage(`✨ Destino fijado: **${config.destino}**. Que comience la historia.`);
+                    addMessage("✥ Destino sellado. La historia comienza ahora. ✥");
                     commandInput.value = ""; return;
                 }
-                
-                // Envío normal a la IA
+
                 addMessage(val, "user");
                 commandInput.value = "";
-                let instruccion = (val.toLowerCase().includes("trama")) ? "Inicia una trama épica con los personajes actuales." : "Continúa la narrativa.";
-                const res = await llamarIA(val, instruccion);
+                const res = await llamarIA(val);
                 addMessage(res, "ai");
             }
 
             sendBtn.onclick = procesar;
-            commandInput.onkeypress = (e) => { if (e.key === "Enter") procesar(); };
-
+            commandInput.onkeypress = (e) => { if(e.key === "Enter") procesar(); };
             updateUI();
-            addMessage("✨ **EL GRIMORIO DE LAS MIL ALMAS SE ABRE**\n\nPASO 1: Elige tu destino (A, B o C).\n\nCOMANDOS ÚTILES:\n• escenario: [Lugar]\n• generar imagen de [Descripción]\n• mi avatar: [Personaje]\n• transformate en [Sujeto]");
+            addMessage("✨ **EL LIBRO DE LAS ALMAS TE SALUDA**\n\n1. Elige tu destino: **A**, **B** o **C**.\n2. Usa `escenario: [Lugar]` para viajar.\n3. Usa `generar imagen de [Cosa]` para ver el mundo.");
         });
     </script>
 </body>
